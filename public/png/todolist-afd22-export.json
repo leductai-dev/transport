@@ -1,0 +1,12 @@
+{
+  "RequestInfo" : {
+               "id_rest" : 1
+  },
+  "userInfo" : {
+    "user" : {
+      "user 2" : "le duc tinh",
+      "user1" : "Le duc tai",
+      "user3" : "nguyen van nghia"
+    }
+  }
+}
