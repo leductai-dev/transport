@@ -2,18 +2,36 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import * as constant from '../Constants/constant'
 /* import { LocalStorage } from "node-localstorage"; */
+import {app} from '../firebaseConfig'
  
 
 
  class header extends Component {
- 
-  componentDidMount(){
-    /* global.localStorage = new LocalStorage('./scratch');
-    console.log("Component Header Loaded");
-    console.log(localStorage.getItem('myFirstKey')); */
-    console.log();
+  constructor(props) {
+     super(props);
+     this.state ={
+          name: localStorage.getItem('centerName'),
+          id: localStorage.getItem('centerID'),
+          status:""
+     }
   }
 
+  componentDidMount(){
+   var a= setInterval(()=>{
+     const name = localStorage.getItem('centerName')
+     const id = localStorage.getItem('centerID')
+     const centerCity = localStorage.getItem('centerCity')
+     if(id && name &&centerCity){
+       clearInterval(a)
+       this.getStatus()
+       this.setState({
+        name: localStorage.getItem('centerName'),
+        id: localStorage.getItem('centerID'),
+     })
+   }},100)
+
+  
+}
 
 
   pageName =(page)=>{
@@ -70,9 +88,35 @@ import * as constant from '../Constants/constant'
           break;
         }
       }
-   
+    getStatus =()=>{
+      const centerCity = localStorage.getItem('centerCity')
+      const centerID = localStorage.getItem('centerID')
+      const centerType = localStorage.getItem('centerType')
+      const database_getCenterStatus = app.database().ref().child(`SupportCenter/${centerType}/${centerCity}/${centerID}/`)
+      database_getCenterStatus.on('value',(datasnapshot)=>{
+         this.setState({
+          status: datasnapshot.val().center_status
+         })
+      })
+    }
+
+    setStatus =()=>{
+      const centerCity = localStorage.getItem('centerCity')
+      const centerID = localStorage.getItem('centerID')
+      const centerType = localStorage.getItem('centerType')
+      const database_getCenterStatus = app.database().ref().child(`SupportCenter/${centerType}/${centerCity}/${centerID}/`)
+      database_getCenterStatus.update({
+        center_status:this.state.status=="true" ? "false":"true"
+      })
+    }
+    status=()=>{
+      if(this.state.status =="true"){
+        return <input onClick={()=>{this.setStatus()}} defaultChecked type="checkbox"  />
+      }else{
+        return  <input onClick={()=>{this.setStatus()}} type="checkbox"  />
+      }
+    }
     render() {
-      
         return (
        
             <div className="div-head d-flex justify-content-between flex-wrap">
@@ -84,18 +128,26 @@ import * as constant from '../Constants/constant'
             </div>
             <div className="ml-auto mr-2" style={{marginTop: '9px'}}>
               <label className="switch">
-                <input type="checkbox" defaultChecked />
+                {this.status()}
                 <span className="slider round" />
               </label>
             </div>
             <div className="div-head-right d-flex justify-content-between">
-              <img className="img-center" src="./png/avatar.jpg" alt="" />
+              <img className="img-center" src="./png/avatar_1.jpg" alt="" />
               <div className="well-name">
-                <p className="wellcome d-flex">
-                  <span>Wellcome</span>
-                  <i className="fa fa-sort-desc btn-option " aria-hidden="true" /></p>
-                <p className="center-name">Công an Quận Thanh Khê</p>
+              <div className="dropdown">
+              <button className="btn dr_custome dropdown-toggle" type="button" data-toggle="dropdown">Wellcome
+                <span className="caret" /></button>
+              <ul className="dropdown-menu">
+                <li><a href="#">HTML</a></li>
+                <li><a href="#">CSS</a></li>
+                <li><a href="#">JavaScript</a></li>
+              </ul>
+            </div>
+
+                <p className="center-name">{this.state.name}</p>
               </div>
+              
             </div>
           </div>
         )
@@ -104,6 +156,8 @@ import * as constant from '../Constants/constant'
 
 const mapStateToProps = (state, ownProps) => {
   return {
+      userInfo: state.userLogin,
+      // có gì ở đây đâu
       page: state.currentPage
   }
 }

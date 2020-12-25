@@ -6,40 +6,42 @@ import {Set_Status} from '../Actions/Action_transactions'
 class authority extends Component {
     constructor(props) {
        super(props);
-       this.Database_GetData_Team = app.database().ref().child(`CenterTeam/yym15naI10VGGoK94hR1Pa7eFX52/InforCenterTeam/`)
-       this.Database_Update_History = app.database().ref().child(`CenterTeam/yym15naI10VGGoK94hR1Pa7eFX52/InforCenterTeam/`)
+       this.Database_GetData_Team = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/InforTeam/`)
 
        this.state ={
             DataTeam :{}
        }
     }
     componentDidMount(){
-        this.Database_GetData_Team.once('value',(datasnapshot)=>{
+        this.Database_GetData_Team.on('value',(datasnapshot)=>{
             this.setState({
                 DataTeam: datasnapshot.val()
         })
-        console.log(datasnapshot.val())
 
     } )}
-    updateTransaction=(teamID)=>{
+    authorityTeam=(teamID)=>{
         if(teamID){
-            const Database_Update_History = app.database().ref().child(`CenterTeam/yym15naI10VGGoK94hR1Pa7eFX52/History/${this.props.transactionData.transaction_id}`)
-            Database_Update_History.update({
+            const database_HistoryCenter = app.database().ref().child(`InfomationCenter/${localStorage.getItem('centerID')}/history/`) 
+            const database_Mission = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/InforTeam/${teamID}/Mission/`) 
+            database_Mission.update({
+                status: "true"
+            })
+            database_HistoryCenter.update({
                 "team_id":teamID
             })
         }
+
     }
     showForm = ()=>{
-          const Teama =this.state.DataTeam
-          var t =  Object.values(Teama)
-            var result = t.map((value,index)=>{
+            const Team =this.state.DataTeam
+            var result = Object.values(Team).map((value,index)=>{
                 return(
-                    <Team update={(teamID)=>{this.updateTransaction(teamID)}} teamID={value.id} key={index} nameTeam={value} status={value.active_status}  ></Team>
+                    <Team update={(teamID)=>{this.authorityTeam(teamID)}} teamID={value.id} key={index} nameTeam={value} status={value.active_status}  ></Team>
                 )
-       })
-        console.log( Object.values(Team))
+             })
             return result 
         }
+
     hideAuthority=()=>{
         this.props.hide();
     }

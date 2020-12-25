@@ -7,8 +7,6 @@ export default  class listteam extends Component {
 
     member_render =()=>{
       const members = this.props.members
-      console.log("Danh sách member")
-      console.log(JSON.stringify(members))
       var result=null
       if(members){
          result =Object.values(members).map((values,index)=>{
@@ -23,7 +21,7 @@ export default  class listteam extends Component {
             keyCode3={keyCode3}
             vt={index}
             memberCode={Object.keys(members)[index]} name={values.name}
-            phone={values.phone} position={values.position}>
+            phone={values.phone} avatar={values.avatar} position={values.position}>
             </Member>
           )
       });
@@ -33,7 +31,6 @@ export default  class listteam extends Component {
     
     render() {
 
-      console.log("Danh sách members");
       
      var active = this.props.active===1?"active":""
         return (

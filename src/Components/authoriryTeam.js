@@ -17,6 +17,6 @@ export default class authority extends Component {
                <button onClick={()=>{this.props.update(this.props.teamID)}} className={` author ml-auto p-2 ${status} border-0 mr-2 rounded-circle`}><img className="img_author" style={{width: '24px', height: '24px'}} src="./png/direct-selection.png" alt="" /></button>
                </div>
            </div>
-        )
+        ) 
     }
 }

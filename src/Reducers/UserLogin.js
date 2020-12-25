@@ -1,12 +1,13 @@
 const initialState = {
-    user_ID: 'taile',
+  
 };
 
 const user = (state = initialState, action) => {
     switch (action.type) {
         case "Action_UserLogin":
            {
-              return {...state,user_ID:'ducttai'}
+               state= action.payload
+              return {...state}
             }
        
         default:

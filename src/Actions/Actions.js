@@ -26,7 +26,7 @@ var dispatchCount = true;
 
 export const Read_Data = ()=>{
             return (dispatch)=>{
-                const database = app.database().ref().child('CenterTeam/yym15naI10VGGoK94hR1Pa7eFX52/InforTeam')
+                const database = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/InforTeam`)
                 return  database.once('value')
                 .then(function(dataSnapshot) {
                 const teamFirst = Object.keys(dataSnapshot.val())[0]
@@ -43,7 +43,7 @@ export const Read_Data = ()=>{
 
 export const Read_Data_Information = ()=>{
     return (dispatch)=>{
-        const database = app.database().ref().child('InfomationCenter/yym15naI10VGGoK94hR1Pa7eFX52/')
+        const database = app.database().ref().child(`InfomationCenter/${localStorage.getItem('centerID')}/`)
         return  database.once('value')
         .then(function(dataSnapshot) {
          console.log(JSON.stringify(dataSnapshot.val()));
@@ -61,9 +61,10 @@ export const Set_Page =(page)=>{
     })
 }
 
-export const UserLogin =(id)=>{
+export const UserLogin =(user)=>{
     return({
         type : 'Action_UserLogin',
-         payload: id
+         payload: user
     })
 } 
+

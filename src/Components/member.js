@@ -14,7 +14,7 @@ import { connect } from 'react-redux'
   delete = () => {
     const teamCode = this.props.infos.currentTeam
     const memberCode = this.props.memberCode
-    var database = app.database().ref().child(`CenterTeam/yym15naI10VGGoK94hR1Pa7eFX52/InforTeam/${teamCode}/members/${memberCode}`)
+    var database = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/InforTeam/${teamCode}/members/${memberCode}`)
     database.remove()
 }
 
@@ -22,7 +22,7 @@ import { connect } from 'react-redux'
 txtChange(event){
   const teamCode = this.props.infos.currentTeam
   const memberCode = this.props.memberCode
-  var database = app.database().ref().child(`CenterTeam/yym15naI10VGGoK94hR1Pa7eFX52/InforTeam/${teamCode}/members/${memberCode}`)
+  var database = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/InforTeam/${teamCode}/members/${memberCode}`)
   console.log(event.target.value);
   var key = event.target.name;
   var value =event.target.value;
@@ -33,14 +33,14 @@ txtChange(event){
 
   
     render() {
-      
+      const value = this.props.avatar ? this.props.avatar:  `./png/avatar_${Math.floor(Math.random() * 5) + 1}.jpg`
         return (
             <div className="col col-sm-6 col-md-4 col-xl-3  mb_45">
             <div className="card box_sd">
               <img src="https://via.placeholder.com/340x120/006dfb/yellow" alt="Cover" className="card-img-top" />
               <div className="card-body pb-0   text-center">
               <div>
-              <img src="https://bootdey.com/img/Content/avatar/avatar7.png" style={{width: '100px', marginTop: '-65px'}} alt="User" className="img-fluid img-thumbnail rounded-circle border-0 mb-1" />
+              <img src={`${value}`} style={{width: '100px', marginTop: '-65px'}} alt="User" className="img-fluid img-thumbnail rounded-circle border-0 mb-1" />
               <div className="text-secondary  mb-4">
                 <input id={this.props.keyCode1} onChange={(event)=>{this.txtChange(event)}} value={this.props.name} className="input3 focus" name="name" />
                 <label htmlFor={this.props.keyCode1} className="edit_right"><i className="fa fa-pencil" aria-hidden="true" /></label>

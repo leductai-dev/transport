@@ -32,45 +32,19 @@ class History extends Component {
                         <p className="user-name">Đầu Cắt Moi</p>
                         <p className="time">8:30AM | 20-11-2011</p>
                         <p className="user-address"><i className="fa fa-map-marker" style={{fontSize: '27px'}} aria-hidden="true" /> <a href>03 Hoàng Tương, Thanh Ba, Phú Thọ</a></p>
+
+                        <div>
+                        <div id="demo" className="collapse">
                         <span className="reques-title">Request Information:</span>
                         <p className="request-info">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eaque dolor vel animi excepturi? Saepe optio odio ab distinctio cupiditate quae corrupti mollitia aspernatur nobis. Autem!.</p>
-                        <p />
+                        </div>
+                        
+                          </div>
+                          <button type="button" className="btn_down " data-toggle="collapse" id="btn_drop" data-target="#demo"><i class="fa fa-chevron-circle-down" aria-hidden="true"></i></button>
                         <span onclick="deleted()" id="hide" className="util-btn"><i className="fa fa-eye" aria-hidden="true" /></span>
                       </div>
                     </div>
-                    <div className="wrap-ct clearfix">
-                      <div className="circle"><img className="user-img" src="./png/avatar.jpg" alt="" /></div>
-                      <div className="user-info">
-                        <p className="user-name">Nguyễn Văn Tào</p>
-                        <p className="time">8:30AM | 20/11/2011</p>
-                        <p className="user-title">Tôi đang gặp tai nạn. Xin hãy đến đây giúp tôi</p>
-                        <p className="user-address"> <i className="fa fa-map-marker" style={{fontSize: '30px'}} aria-hidden="true" /> <a href>03 Hoàng Tương, Thanh Ba, Phú Thọ</a>
-                        </p>
-                        <span className="util-btn">⋮</span>
-                      </div>
-                    </div>
-                    <div className="wrap-ct clearfix">
-                      <div className="circle"><img className="user-img" src="./png/avatar.jpg" alt="" /></div>
-                      <div className="user-info">
-                        <p className="user-name">Nguyễn Văn Tào</p>
-                        <p className="time">8:30AM | 20/11/2011</p>
-                        <p className="user-title">Tôi đang gặp tai nạn. Xin hãy đến đây giúp tôi</p>
-                        <p className="user-address"> <i className="fa fa-map-marker" style={{fontSize: '30px'}} aria-hidden="true" /> <a href>03 Hoàng Tương, Thanh Ba, Phú Thọ</a>
-                        </p>
-                        <span className="util-btn">⋮</span>
-                      </div>
-                    </div>
-                    <div className="wrap-ct clearfix">
-                      <div className="circle"><img className="user-img" src="./png/avatar.jpg" alt="" /></div>
-                      <div className="user-info">
-                        <p className="user-name">Nguyễn Văn Tào</p>
-                        <p className="time">8:30AM | 20/11/2011</p>
-                        <p className="user-title">Tôi đang gặp tai nạn. Xin hãy đến đây giúp tôi</p>
-                        <p className="user-address"> <i className="fa fa-map-marker" style={{fontSize: '30px'}} aria-hidden="true" /> <a href>03 Hoàng Tương, Thanh Ba, Phú Thọ</a>
-                        </p>
-                        <span className="util-btn">⋮</span>
-                      </div>
-                    </div>
+                 
                   </div>
                 </div>
                 <div id="menu1" className="container tab-pane fade"><br />
@@ -84,7 +58,6 @@ class History extends Component {
                   <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque
                     laudantium, totam rem aperiam.</p>
                 </div>
-                <h5>You are at the bottom of the page</h5>
               </div>
             </div>
           </div>

@@ -26,7 +26,7 @@ class Information extends Component {
   componentDidMount(){
     this.props.setPage(2);
     this.props.getData();
-    const database = app.database().ref().child('InfomationCenter/yym15naI10VGGoK94hR1Pa7eFX52/')
+    const database = app.database().ref().child(`InfomationCenter/${localStorage.getItem('centerID')}/`)
     database.on('value', (dataSnapshot)=> {
         this.props.getData();
       })
@@ -34,7 +34,7 @@ class Information extends Component {
   
   saveInfo=()=>{
     console.log("Dữ liệu chuẩn bị lưu là:"+JSON.stringify(this.state))
-    const database = app.database().ref().child('InfomationCenter/yym15naI10VGGoK94hR1Pa7eFX52/')
+    const database = app.database().ref().child(`InfomationCenter/${localStorage.getItem('centerID')}/`)
     var updates = {
         center_name:this.state.name,
         center_phone:this.state.phone,
@@ -94,7 +94,7 @@ class Information extends Component {
                     </div>
                     <div className="mt-cts d-flex">
                       <label className="  position-absolute color-label"><i className="fa fa-map-marker" aria-hidden="true" /> Address*:</label>
-                      <input placeholder="Example: 02 Hai Ba Trung" type="text" className="edit-input" name="address" onChange={(event)=>{this.onChange(event)}} defaultValue={center.center_address} />
+                      <input  className="edit-input" name="address" onChange={(event)=>{this.onChange(event)}} defaultValue={center.center_address} />
                     </div>
                     <div className="mt-cts d-flex">
                       <label className="  position-absolute color-label"><i className="fa fa-envelope-o" aria-hidden="true" /> Email*:</label>
@@ -135,7 +135,7 @@ class Information extends Component {
                     <div className="content-man">
                       <div className="mt-4 d-flex mt-5">
                         <span className="ml-5 position-absolute"><img className="verti-tb" src="./png/house.png" alt="" /> Center Name*:</span>
-        <span className="position-relative" style={{left: '300px'}}>{center.center_name}</span>
+                       <span className="position-relative" style={{left: '300px'}}>{center.center_name}</span>
                       </div>
                       <div className="mt-5 d-flex">
                         <span className="ml-5 position-absolute"><img className="verti-tb" src="./png/telephone.png" alt="" /> Phone number*:</span>
@@ -180,7 +180,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     getData: () => {
         dispatch(Read_Data_Information());
     },
-     
   }
 } 
 export default connect(mapStateToProps,mapDispatchToProps)(Information)

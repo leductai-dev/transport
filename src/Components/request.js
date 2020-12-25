@@ -8,74 +8,86 @@ import Authority from './authority';
 class request extends Component {
     constructor(props) {
        super(props);
-       this.database_GetUserID = app.database().ref().child('Transaction/d3lnDLK3ApV7UJuUZUjXjWy5W742/')
-       this.database_UpdateValue = app.database().ref().child('Transaction/d3lnDLK3ApV7UJuUZUjXjWy5W742/')
+       this.centerID = localStorage.getItem('centerID')
+       this.database_GetUserID = app.database().ref().child(`Requests/${this.centerID}/`)
+       this.database_UpdateValue =  app.database().ref().child(`Requests/${this.centerID}/`)
        this.state ={
            show : false ,
            userInfo:{},
            transactionInfo:{}
        }
     }
-/*     componentDidMount(){
+    componentDidMount(){
+      if(this.centerID){
         this.database_GetUserID.on('value', (dataSnapshot)=> {  //Lắng nghe request từ user, nếu có id user
-            if(dataSnapshot.val().user_id)  
-            {
-              this.setState({  
-                show : true,   //show form request
-                transactionInfo: dataSnapshot.val() //Lưu thông tin request vào state để khi accept thì gửi thông tin tracsaction lên db
+          if(dataSnapshot.val().user_id)  
+          {
+            this.setState({  
+              show : true,   //show form request
+              transactionInfo: dataSnapshot.val() //Lưu thông tin request vào state để khi accept thì gửi thông tin tracsaction lên db
 
-            },this.getUserInfo(dataSnapshot.val()))  //Có được id rồi thì get thông tin user rồi lưu vào state
-            }
-            else{
-                this.setState({
-                    show : false
-                })
-            }
-        })
+          },this.getUserInfo(dataSnapshot.val()))  //Có được id rồi thì get thông tin user rồi lưu vào state
+          }
+          else{
+              this.setState({
+                  show : false
+              })
+          }
+      })
+      }
+       
     }
- */
-    reject_Request= ()=>{        //Button từ chối request
+
+
+
+    reject_Request= ()=>{       
     var date = generatorTime();      //Tao ra time để lưu thời gian request
     this.setState({
       show: false        //Ẩn form form request
     })
-    const database_PushValue = app.database().ref().child(`CenterTeam/yym15naI10VGGoK94hR1Pa7eFX52/History/`) 
-      database_PushValue.push(  //Đẩy dữ liệu request lên db lưu vào history
+    const database_HistoryCenter = app.database().ref().child(`InfomationCenter/${localStorage.getItem('centerID')}/history/`) 
+    database_HistoryCenter.push(  //Đẩy dữ liệu request lên db lưu vào history
         {...this.state.requestInfo,
           "status":"false",       //Status đại diện cho việc center từ chối request
-          "date":date
+          "date":date,
+          "team_id":"" ,
         }
         )
       this.database_UpdateValue.update({    //Trả thông tin transaction về null
               latitude_user:"",
               longitude_user:"",
               tran_status: true,
-              user_id:""
+              user_id:"",
+              message_toUser:"false"   
           }) 
       }
 
       
-    accept_Request= ()=>{     //Button accept request
+    accept_Request= ()=>{    
       const generatorID = uuidv4()    //Tự tạo id transaction để lúc update team đã help thì biết được transaction nào
       this.props.setData(generatorID)     //Lưu vào state để cpn update team helped nhận được
-      const database_PushValue = app.database().ref().child(`CenterTeam/yym15naI10VGGoK94hR1Pa7eFX52/History/${generatorID}`) 
+      const database_HistoryCenter = app.database().ref().child(`InfomationCenter/${localStorage.getItem('centerID')}/history/`) 
       var date = generatorTime();     //Đẩy dữ liệu lên database lưu vào history
-      database_PushValue.set(
+      database_HistoryCenter.set(
         {...this.state.transactionInfo,
           "status":"true",  //Status đại diện cho việc center có accept request không
           "date":date,
-          "team_id":""    
+          "team_id":"" ,
+           
         }
         )
-      this.database_UpdateValue.update({    //Update lại transaction
+      this.database_UpdateValue.update({    //Update lại transaction và trả lời user
               latitude_user:"",
               longitude_user:"",
               tran_status: true,
-              user_id:""
+              user_id:"",
+              message_toUser:"true"  
           }) 
       }   
 
-    showRequest =()=>{    //Interface request từ user 
+   
+   
+      showRequest =()=>{    //Interface request từ user 
         if(this.state.show){
         return (
         <div className="user-request" id="modal">   <i className="fa fa-user-o" aria-hidden="true" />

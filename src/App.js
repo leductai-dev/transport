@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState,useEffect } from 'react';
 import Menu from './Components/menu.js';
 import routes from './Routes'
 import Header from './Components/header.js'
@@ -6,7 +6,8 @@ import Request from './Components/request'
 import LoginRegister from './Pages/Login_Register'
 import { useDispatch, useSelector } from "react-redux";
 import Main from './Apps2'
-
+import {app} from './firebaseConfig'
+import {Get_DataUserLogin,} from './Actions/Actions'
 
 import {
   BrowserRouter as Router,
@@ -17,48 +18,64 @@ import Home from './Pages/Home';
 import { Redirect } from "react-router-dom";
 function App() {
   
-/*   const { count, user } = useSelector(state => ({
-    count: state.counter.count,
-    user: state.user,
-  })); */
 
+  var [isLogin, setisLogin] = useState(true)
 
-  const userToken2 = useSelector(state => state.user.user_ID);
-  console.log(userToken2);
-  const userToken = localStorage.getItem('user_ID')
-  if(userToken){
-    return (  
-      <Router> 
+  useEffect(() => {
+    
+  }, [])
+
+  app.auth().onAuthStateChanged(function(user) {
+    if(user) {
+      setisLogin(true)
+      console.log("đã login")
+    }
+    else{
+      setisLogin(false)
+      console.log("chưa login")
+    }}
+    )
+
+  
+  
+
+return(
+  <Router> 
          <Switch>
+              <Route path={'/login-register'}  exact = {false}>
+              {!isLogin ?  <LoginRegister/> :<Redirect to="/" /> }
+              </Route> 
             <Route path={'/'}  exact = {false}>
-            {userToken ? <Main /> :<Redirect to="/login-register" /> }
+            {isLogin ? <Main /> :<Redirect to="/login-register" /> }
             </Route>
-            <Route path={'/login-register'}  exact = {false}>
-               <LoginRegister/>
-            </Route>
-        </Switch>
+            </Switch>
+</Router>
 
-
-      {/*   <div className="row h-100 bg_main ">
-        <Menu/>
-        <div className="col-md-10 h-100 customize-layout-right d-flex flex-column"> 
-        <Header/>
-        <Redirection/> 
-        </div>
-        </div> 
-        <Request></Request> */}
-      </Router>
     );
   }
-  else{
-    return(
-      <Router>
-      <LoginRegister/>
-      </Router>
-    )
-  }
+
+ /*  <Main />  */
+
+/*   app.auth().onAuthStateChanged(function(user) {
+    if(user)
+    {
+      <Router> 
+      <Switch>
+         <Route path={'/'}  exact = {false}>
+      <Main /> 
+         </Route>
+       
+     </Switch>
+   </Router>
+    }
+    else{
+      alert("nope")
+  
+    }
+  })
+  )} */
+
  
-}
 /* function Redirection(){
   var result = null;
   result = routes.map((route,index)=>{

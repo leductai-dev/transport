@@ -454,7 +454,6 @@ h2 {
 .user-info {
     height: auto;
     position: relative;
-    margin-bottom: -16px;
 
 }
 .user-address{
@@ -599,7 +598,6 @@ img {
 .btn-addnew:active,
 .btn-addnew:visited,
 .btn-addnew:focus{
-    border: none;
     outline: none;
 }
 .form-modal{
@@ -808,7 +806,7 @@ outline: none;
 
  }
  .box_sd{
-    box-shadow: grey 3px 4px 9px -3px;
+    box-shadow: grey 4px 5px 5px -1px;
  }
  .box_sd:hover{
      transform: translateY(-5px);
@@ -970,16 +968,7 @@ outline: none;
     overflow-y: scroll;
     overflow-x: hidden;
 }
-.btn_dele_team{
-    right: 74px;
-    border: none;
-    background-color: transparent;
-    font-size: 25px;
-    font-weight: bold;
-    color: gray;
 
-
-}
 .btn_dele_team:focus,.btn_dele_team:visited,.btn_dele_team:active{
     outline: none;
     background-color: none;
@@ -987,6 +976,89 @@ outline: none;
 
 }
 .btn_dele_team:hover{
-    color:rgb(29, 18, 18);
     transform: scale(1.2);
+    transition: all 0.1s;
+}
+.util_team{
+    margin-left: auto;
+    margin-right: 40px;
+    position: relative;
+
+}
+.btn_dele_team{
+    border: none;
+    width: 30px;
+    height: 30px; 
+    border-radius: 50%;
+    margin-left: 19px;
+    font-size: 19px;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    position: relative;
+    top: 0px;
+    left: 0px;
+    margin: 0 20px 0 20px;
+}
+.btn_dele{
+    margin: 0 20px 0 0;
+}
+.align_bottom{
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+    transform:translate(-50%,-50%);
+
+}
+.dr_custome{
+    color: white;
+    font-size: 14px;
+    padding: 0;
+
+}
+.dr_custome:hover{
+    color: white;
+
+}
+.btn_down{
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 19px;
+    color: white;
+    position: absolute;
+    background-color: #005bea;
+    bottom: -27px;
+    transform: translate(10px, 10px);
+    left: 50%;
+    right: 50%;
+    transform: translateX(-50%);
+    outline: none;
+}
+.btn_down:active{
+    outline:none;
+    border: none;
+}
+.btn_down:visited{
+    outline:none;
+    border: none;
+}
+
+.e_name{
+    width: 180px;
+    margin-right: 20px;
+
+}
+.i_outline:active,.i_outline:visited{
+    outline: none;
+}
+
+.maintain{
+    background-image: url(./png/nang-cap.jpg);
+    width: 100%;
+    height: 100%;
+    background-repeat: none;
+    background-size: contain;
 }

@@ -1,11 +1,10 @@
 import React, { useFetching,useEffect,useMemo,useCallback,useState,useRef  } from 'react';
 import { MapContainer, TileLayer, Marker, Popup,Tooltip } from 'react-leaflet';
 import { useMapEvents } from 'react-leaflet'
-import { useDispatch } from 'react-redux';
+import { useDispatch,useSelector } from 'react-redux';
 import L from "leaflet";
 import { connect } from 'react-redux'
 import {Set_Page,} from './../Actions/Actions'
-
 import {app} from '../firebaseConfig'
 
 
@@ -29,9 +28,8 @@ const UserIcon = new L.Icon({
 });
 
 
-
-
 export const Component = (props) => {
+const useLogin = useSelector((state) => state.userLogin);
 const[center,setCenter] = useState(
      [16.060392,108.211847]
 )
@@ -41,41 +39,56 @@ const [Transaction, setTransaction] = useState(null)
 const [CenterLocation, setCenterLocation] = useState(null)
 const [TeamLocation, setTeamLocation] = useState(null)
 const [UserLocation, setUserLocation] = useState(null)
+const localStorageID = localStorage.getItem('centerID')
+const stateID = useLogin.center_id
+const centerID = localStorageID ? localStorageID : stateID
 
 
-const database_getCenterLocation = app.database().ref().child('InfomationCenter/yym15naI10VGGoK94hR1Pa7eFX52')
-const database_Transactions = app.database().ref().child('CenterTeam/yym15naI10VGGoK94hR1Pa7eFX52/Transactions/')
+const id = localStorage.getItem('centerID')
+const city = localStorage.getItem('centerCity')
+const type = localStorage.getItem('centerType')
 
+
+var database_getCenterLocation = app.database().ref().child(`InfomationCenter/${centerID}`)
+const database_Transactions = app.database().ref().child(`CenterTeam/${centerID}/Transactions/`)
+var database_UpdateLocationSupport = app.database().ref().child(`SupportCenter/${type}/${city}/${id}/`)
+/* var database_UpdateLocationSupport = "" */
 const dispatch = useDispatch()
 
 
 useEffect(() => {
-  dispatch(Set_Page(1));
-  database_getCenterLocation.once("value",(snap)=>{
-    const lat =snap.val().center_latitude
-    const lng=snap.val().center_longitude
-    if(lng){
-      setCenterLocation([lat,lng])
-      console.log("didmount"+ typeof CenterLocation)
-    }
-   
-  })
-
-
-     database_Transactions.on("value",(snap)=>{
-    setTransaction(snap.val())
-     
-  })
-
   
+  dispatch(Set_Page(1));
+  var a= setInterval(()=>{
+    const id = localStorage.getItem('centerID')
+    const city = localStorage.getItem('centerCity')
+    const type = localStorage.getItem('centerType')
+    if(id){
+      clearInterval(a)
+       database_getCenterLocation = app.database().ref().child(`InfomationCenter/${id}/`)
+       database_UpdateLocationSupport =  app.database().ref().child(`SupportCenter/${type}/${city}/${id}/`)
+      
+       database_getCenterLocation.once("value",(snap)=>{
+      if(snap.val()){
+      const lat =snap.val().center_latitude
+      const lng=snap.val().center_longitude
+      if(lng){
+        setCenterLocation([lat,lng])
+        setCenter([lat,lng])
+      }
+    }
+  })
+  }},100)
 
-
+      database_Transactions.on("value",(snap)=>{
+     setTransaction(snap.val())
+     })
 
 }, [])
-/* useFetching(props.setPage(1)) */
 
 
 const DraggableMarker =()=> {
+
   const markerRef = useRef(null)
   const eventHandlers = useMemo(
     () => ({
@@ -87,24 +100,39 @@ const DraggableMarker =()=> {
             center_latitude: `${marker.getLatLng().lat}`,
             center_longitude:`${marker.getLatLng().lng}`,
           })
+          database_UpdateLocationSupport.update({
+            center_latitude: `${marker.getLatLng().lat}`,
+            center_longitude:`${marker.getLatLng().lng}`,
+          })
+          localStorage.setItem('latitude',marker.getLatLng().lat)
+          localStorage.setItem('longitude',marker.getLatLng().lng)
         }
       },
-    }),
-    [],
-  )
+    }), [], )
+  
+
+ const map = useMapEvents({
+      click() {
+        map.locate()
+      },
+      locationfound(e) {
+        map.flyTo(CenterLocation, 13)
+      },
+    })
+  
   const toggleDraggable = useCallback(() => {
     setDraggable((d) => !d)
   }, [])
 
-  return (
 
+  return (
     <Marker
       icon={CenterIcon}
       draggable={draggable}
       eventHandlers={eventHandlers}
       position={CenterLocation}
       ref={markerRef}>
-      <Tooltip direction="top" offset={[0, -50]}>Your Center</Tooltip>
+      <Tooltip direction="top" permanent offset={[0, -50]}>Your Center</Tooltip>
       <Popup maxWidth={200} >
         <span onClick={toggleDraggable}>
           {draggable
@@ -123,13 +151,17 @@ const FirstCenterLocation=()=> {
   const eventHandlers = useMemo(
     () => ({
       dragend() {
-        const marker = markerRef.current
+        const marker = markerRef.current  
         if (marker != null) {
           setCenterLocation(marker.getLatLng())
           database_getCenterLocation.update({
             center_latitude: `${marker.getLatLng().lat}`,
             center_longitude:`${marker.getLatLng().lng}`,
           })
+        /*   localStorage.setItem('latitude',marker.getLatLng().lat)
+          localStorage.setItem('longitude',marker.getLatLng().lat) */
+  
+
         }
       },
     }),
@@ -141,7 +173,20 @@ const FirstCenterLocation=()=> {
       },
       locationfound(e) {
         setPosition(e.latlng)
-        map.flyTo(e.latlng, 12)
+        map.flyTo(e.latlng, 13)
+        database_getCenterLocation.update({
+          center_latitude: `${e.latlng.lat}`,
+          center_longitude:`${e.latlng.lng}`,
+        })
+
+        database_UpdateLocationSupport.update({
+          center_latitude: `${e.latlng.lat}`,
+          center_longitude:`${e.latlng.lng}`,
+        })
+        localStorage.setItem('latitude',e.latlng.lat)
+        localStorage.setItem('longitude',e.latlng.lng)
+
+
       },
     })
   
@@ -165,52 +210,63 @@ const FirstCenterLocation=()=> {
 
 
 const ShowUserLocation=()=>{
-  console.log(Transaction)
   const view = Object.values(Transaction).map((value,index)=>{
+    if(value.user_latitude && value.user_longitude){
     const lat = value.user_latitude
     const lng = value.user_longitude
-    return(
-      <Marker
-      key={index}
-      icon={UserIcon}
-      position={[lat,lng]}
-   >
-       <Tooltip direction="top" offset={[0, -25]} opacity={1} sticky>
-          Ready...
-      </Tooltip>
- </Marker>)
+      return(
+          <Marker
+          key={index}
+          icon={UserIcon}
+          position={[lat,lng]}>
+          <Tooltip permanent direction="top" offset={[0, -45]} opacity={1} sticky>
+              I am user...
+          </Tooltip>
+          </Marker> 
+        )  
+    }
   })
   return view
 }
+
+
 const ShowTeamLocation=()=>{
-  console.log(Transaction)
   const view = Object.values(Transaction).map((value,index)=>{
+    if(value.team_latitude && value.team_longitude){
     const lat = value.team_latitude
     const lng = value.team_longitude
-    const Message =  value.user_longitude?`On duty...`:`Ready...`
+    const Message =  value.user_id?`On duty...`:`Ready...`
     return(
       <Marker
       key={index}
       icon={TeamIcon}
       position={[lat,lng]}
-   >
-     <Tooltip direction="top" offset={[0, -45]} opacity={1} permanent>
+      >
+      <Tooltip direction="top" offset={[0, -45]} opacity={1} permanent>
         {Message}
       </Tooltip>
- </Marker>)
-  })
+      </Marker>
+    )
+  }
+})
   return view
 }
-
-
+/* var location = []
+if(localStorage.getItem('latitude')){
+const lat = localStorage.getItem('latitude')
+const lng = localStorage.getItem('longitude')
+ location = [lat,lng]
+} */
 
     return (
-      
       <div classname="flex-grow-1 map" >
-       
-      <MapContainer  style={{width: '100%', height: '93.2vh'}}
-            center={center}
-            zoom={3}
+        {center?console.log(center):console.log("null")}
+      <MapContainer  style={{width: '100%', height: '93.2vh',position:"relative",zIndex:'0'}}
+           /*  center={location?location:center} */
+           center={localStorage.getItem('latitude')?[localStorage.getItem('latitude'),localStorage.getItem('longitude')]:center}
+            zoom={localStorage.getItem('latitude')? 13: 2}
+          /*   zoom={ 13} */
+
             scrollWheelZoom={true}>
            
         <TileLayer
@@ -221,8 +277,8 @@ const ShowTeamLocation=()=>{
          {CenterLocation? <DraggableMarker/>:console.log(" đang hiện lần đầu")}
     
         {!CenterLocation?<FirstCenterLocation/>:console.log("đang hiện lần sau")}
-      {Transaction? <ShowUserLocation/>:console.log("la")}
-      {Transaction? <ShowTeamLocation/>:console.log("cc")}
+      {Transaction? <ShowUserLocation/>:console.log("Chưa nhận request nào từ user")}
+      {Transaction? <ShowTeamLocation/>:console.log("Chưa có team nào")}
       </MapContainer>,
  
       </div>

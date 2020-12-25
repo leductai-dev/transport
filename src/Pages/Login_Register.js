@@ -1,22 +1,14 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import {UserLogin} from './../Actions/Actions'
 import {app} from '../firebaseConfig'
 import { browserHistory } from "react-router";
 import { v4 as uuidv4 } from 'uuid';
-
-import {
-    BrowserRouter as Router,
-    Link
-} from "react-router-dom";
-import { Redirect } from "react-router-dom";
+import {UserLogin} from '../Actions/Actions'
 import {
     createBrowserHistory,
-    createHashHistory,
-    createMemoryHistory
   } from 'history'
+import {connect} from 'react-redux'
 class LoginRegister extends Component {
-    
+  
     constructor(props) {
        super(props);
        this.state ={
@@ -47,41 +39,87 @@ class LoginRegister extends Component {
         const db_CenterTeam = app.database().ref().child(`CenterTeam/${generatorID}/`)
         const db_InfomationTeam = app.database().ref().child(`InfomationCenter/${generatorID}/`)
         const db_SupportTeam = app.database().ref().child(`SupportCenter/${center_type}/${center_city}/${generatorID}/`)
+        const db_Request = app.database().ref().child(`Requests/${generatorID}/`)
+
 
         app.auth().createUserWithEmailAndPassword(center_email, pass)
          .then((user) => {
         alert("Đăng kí tài khoản thành công")
+        var user = app.auth().currentUser;
+        if (user != null) {
+            user.providerData.forEach(function (profile) {
+            });
+          }
         db_CenterTeam.set({
-            History:"",
             InforTeam:"",
             Transactions:""
         })
-        db_InfomationTeam.set({
+     db_InfomationTeam.set({
             center_email,
             center_name,
             center_phone,
             center_type,
             center_city,
-            center_address:"",
+            center_address:"　",
             center_latitude:"",
             center_longitude:"",
-            center_status:true
+            center_status:true,
+            center_id:generatorID,
+            history:""
+              
         })
-        db_SupportTeam.set({
-            center_email,
+         db_SupportTeam.set({
             center_name,
-            center_phone,
-            center_type,
-            center_city,
-            center_address:"",
             center_latitude:"",
             center_longitude:"",
-            center_status:true
-        })
+            center_status:"true",
+            center_id:generatorID
+        }) 
+         db_Request.set({
+          tran_status: true,
+          message_toUser:"null"
+         })
+        app.auth().signInWithEmailAndPassword(center_email, pass)
+        .then((user) => {
+            var user = app.auth().currentUser;
+                user.updateProfile({
+                    displayName:generatorID,
+                  }).then(function() {
+                    const database_getUserInfo = app.database().ref().child(`InfomationCenter/${generatorID}/`)
+                    database_getUserInfo.once('value',function(dataSnapshot){
+                        console.log(dataSnapshot.val())
+                        localStorage.setItem('centerID' ,dataSnapshot.val().center_id)
+                        localStorage.setItem( 'centerPhone' ,dataSnapshot.val().center_phone)
+                        localStorage.setItem( 'centerName' ,dataSnapshot.val().center_name)
+                        localStorage.setItem( 'centerStatus' ,dataSnapshot.val().center_status)
+                        localStorage.setItem( 'centerCity' ,dataSnapshot.val().center_city)
+                        localStorage.setItem( 'centerEmail' ,dataSnapshot.val().center_email)
+                        localStorage.setItem( 'centerType' ,dataSnapshot.val().center_type)
+                    })
+                     /*  app.auth().signOut().then(function() {
+                        console.log("logout thành công")
+                        if (user != null) {
+                            user.providerData.forEach(function (profile) {
+                              console.log("  Name: " + profile.displayName);
+                            });
+                          }
+                      }).catch(function(error) {
+                        console.log("logout thất bại")
+                      }); */
+                  }).catch(function(error) {
+                    console.log("update profile thất bại")
+                    
+                  });
+              }
+             )
+        .catch((error) => {
+            alert("Đang nhâp không thành công từ đăng kí")
+           
+        });
+      
 
     })
   .catch((error) => {
-      console.log("có lỗi")
       alert("Đăng kí thất bại")
     var errorCode = error.code;
    var  Message = error.message;
@@ -90,19 +128,40 @@ class LoginRegister extends Component {
 
 
     login= () =>{
-        const name = this.state.email
-        const password= this.state.password
+        const self = this
         const history = createBrowserHistory();
-        app.auth().signInWithEmailAndPassword(name, password)
+        const name = this.state.email
+        const {password}= this.state
+         app.auth().signInWithEmailAndPassword(name, password)
         .then((user) => {
-            console.log(user)
-            localStorage.setItem('user_ID','1')
-            window.location.reload();
+        var user = app.auth().currentUser; // cần có 
+        var userid = null;
+        if (user != null) {
+            user.providerData.forEach(function (profile) {
+              console.log("  User ID 1: " + profile.displayName);
+              userid = profile.displayName
+              const database_getUserInfo = app.database().ref().child(`InfomationCenter/${userid}/`)
+              database_getUserInfo.once('value', function(dataSnapshot){
+              localStorage.setItem( 'latitude' ,dataSnapshot.val().center_latitude)
+              localStorage.setItem( 'longitude' ,dataSnapshot.val().center_longitude)
+              localStorage.setItem('centerID' ,dataSnapshot.val().center_id)
+              localStorage.setItem( 'centerPhone' ,dataSnapshot.val().center_phone)
+              localStorage.setItem( 'centerName' ,dataSnapshot.val().center_name)
+              localStorage.setItem( 'centerStatus' ,dataSnapshot.val().center_status)
+              localStorage.setItem( 'centerCity' ,dataSnapshot.val().center_city)
+              localStorage.setItem( 'centerEmail' ,dataSnapshot.val().center_email)
+              localStorage.setItem( 'centerType' ,dataSnapshot.val().center_type)
+              self.props.setUserLogin(dataSnapshot.val())
+
+             
+          })
+            });
+          }
+          console.log("user id 2 là :"+userid)
+       
   })
         .catch((error) => {
             alert("Đang nhâp không thành công")
-            var errorCode = error.code;
-            var errorMessage = error.message;
         });
     }
 
@@ -127,9 +186,6 @@ class LoginRegister extends Component {
     render() {
       
         return (
-      
-         
-              
                     <div className="container register">
                       <div className="row rowcs1">
                         <div className="col-md-3 register-left">
@@ -168,8 +224,6 @@ class LoginRegister extends Component {
                                     </div>
                                     <button type="button" onClick={()=>{this.login()}} className="btnRegister2">Login</button>
                                     <div className="err-message" style={{marginTop: '15px'}}>
-                                      <span id="getMsg">Msg box</span>
-                                      <span>"hihi"</span>
                                     </div>
                                   </form>
                                 </div>
@@ -208,7 +262,7 @@ class LoginRegister extends Component {
                                         <label htmlFor="type" className="form-label">City</label>
                                       <select onChange={(e)=>{this.isChange(e)}}  id="type" name="center_city" className="form-control">
                                         <option className="hidden" selected disabled>Choose one</option>
-                                        <option value="Đà nẵng">Đà nẵng</option>
+                                        <option value="Đà Nẵng">Đà Nẵng</option>
                                         <option value="Hồ Chí Mình">Hồ Chí Minh</option>
                                         <option value="Hà Nội">Hà Nội</option>
                                       </select>
@@ -235,9 +289,7 @@ class LoginRegister extends Component {
                                       <span className="form-message" />
                                     </div>
                                   </div>
-                                  <div className="err-message" style={{marginTop: '5px'}}>
-                                    <span>Show msg</span>
-                                  </div>
+                                
                                   <button type="button" onClick={()=>{this.signup()}} className="btnRegister">Continue</button>
                                 </div></form>
                             </div>
@@ -250,20 +302,25 @@ class LoginRegister extends Component {
                   );
                 }
             }
+
+
 const mapStateToProps = (state) => {
   return {
-      center: state.centerInfo
   }
 }
+
+
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    userLogin: () => {
-        dispatch(UserLogin());
-    },
+    
+    setUserLogin: (user) => {
+      dispatch(UserLogin(user));
+  },
+  setUserLogout: (user) => {
+    dispatch(UserLogin(user));
+},
+    
      
   }
 } 
 export default connect(mapStateToProps,mapDispatchToProps)(LoginRegister)
-
-
-
