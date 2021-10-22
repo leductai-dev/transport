@@ -28,6 +28,7 @@ import {connect} from 'react-redux'
         });
         const history =  createBrowserHistory()
         history.push('./')
+        this.logout()
     }
 
     logout=()=>{

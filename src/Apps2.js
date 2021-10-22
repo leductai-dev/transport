@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import Menu from './Components/menu.js';
 import routes from './Routes'
-import Header from './Components/header.js'
 import Request from './Components/request'
 import LoginRegister from './Pages/Login_Register'
 import {
@@ -15,8 +14,7 @@ export const Component = (props) => {
         <>
           <div className="row h-100 bg_main ">
         <Menu/>
-        <div className="col-md-10 h-100 customize-layout-right d-flex flex-column"> 
-        <Header/>
+        <div id="tmp_id" className="col-md-10 h-100 customize-layout-right d-flex flex-column"> 
         <Redirection/> 
         </div>
         </div> 

@@ -2,6 +2,7 @@ import {app} from '../firebaseConfig'
 
 
 export const Set_Data =(data)=>{
+    console.log(data);
     return({
         type : 'Action_SetData_For_Authority',
          data

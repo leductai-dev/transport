@@ -1,62 +1,60 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import {Set_Page,} from './../Actions/Actions'
+import {app} from '../firebaseConfig'
+import HistoryItem from '../Components/historyItem'
 class History extends Component {
+  constructor(props) {
+     super(props);
+     this.state ={
+          dataHistory:{}
+     }
+  }
   componentDidMount(){
     this.props.setPage(3);
+    const database = app.database().ref().child(`InfomationCenter/${localStorage.getItem('centerID')}/history/`)
+    database.on('value', (dataSnapshot)=> {
+       this.setState({
+        dataHistory: dataSnapshot.val()
+       })
+      })
+  }
+  showHistory=()=>{
+    var result = Object.values(this.state.dataHistory).map((value,index)=>{
+      return   <HistoryItem
+        date={value.date} key={index} name={value.userName} address={value.userAddress}
+      />
+    })
+    return result
   }
     render() {
+      console.log(this.state.dataHistory);
         return (
             <div className="flex-grow-1 map">
             <div className="contain">
               <ul className="nav nav-tabs ul-height" role="tablist">
                 <li className="nav-item">
-                  <a className="nav-link active" data-toggle="tab" href="#home">Mới nhất</a>
+                  <a className="nav-link active" data-toggle="tab" href="#home">Latest</a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" data-toggle="tab" href="#menu1">Gần đây</a>
+                  <a className="nav-link" data-toggle="tab" href="#menu1">Recently</a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" data-toggle="tab" href="#menu2">Tháng qua</a>
+                  <a className="nav-link" data-toggle="tab" href="#menu2">Last Month</a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" data-toggle="tab" href="#menu2">Trước nữa</a>
+                  <a className="nav-link" data-toggle="tab" href="#menu2">Last Year</a>
                 </li>
               </ul>
               <div className=" tab-content tab-container">
                 <div id="home" className="container tab-pane active">
-                  <div className="list-group contact-group">
-                    <div id="list" className="wrap-ct clearfix">
-                      <div className="circle"><img className="user-img" src="./png/avatar.jpg" alt="" /></div>
-                      <div className="user-info">
-                        <p className="user-name">Đầu Cắt Moi</p>
-                        <p className="time">8:30AM | 20-11-2011</p>
-                        <p className="user-address"><i className="fa fa-map-marker" style={{fontSize: '27px'}} aria-hidden="true" /> <a href>03 Hoàng Tương, Thanh Ba, Phú Thọ</a></p>
-
-                        <div>
-                        <div id="demo" className="collapse">
-                        <span className="reques-title">Request Information:</span>
-                        <p className="request-info">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eaque dolor vel animi excepturi? Saepe optio odio ab distinctio cupiditate quae corrupti mollitia aspernatur nobis. Autem!.</p>
-                        </div>
-                        
-                          </div>
-                          <button type="button" className="btn_down " data-toggle="collapse" id="btn_drop" data-target="#demo"><i class="fa fa-chevron-circle-down" aria-hidden="true"></i></button>
-                        <span onclick="deleted()" id="hide" className="util-btn"><i className="fa fa-eye" aria-hidden="true" /></span>
-                      </div>
-                    </div>
-                 
-                  </div>
+               {this.showHistory()}
+                  
                 </div>
                 <div id="menu1" className="container tab-pane fade"><br />
-                  <h3>Menu 1</h3>
-                  <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
-                    ea
-                    commodo consequat.</p>
                 </div>
                 <div id="menu2" className="container tab-pane fade"><br />
-                  <h3>Menu 2</h3>
-                  <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque
-                    laudantium, totam rem aperiam.</p>
+                 
                 </div>
               </div>
             </div>

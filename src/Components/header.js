@@ -28,9 +28,19 @@ import {app} from '../firebaseConfig'
         name: localStorage.getItem('centerName'),
         id: localStorage.getItem('centerID'),
      })
+     this.login()
    }},100)
 
   
+}
+login=()=>{
+  const centerCity = localStorage.getItem('centerCity')
+  const centerID = localStorage.getItem('centerID')
+  const centerType = localStorage.getItem('centerType')
+  const database_getCenterStatus = app.database().ref().child(`SupportCenter/${centerType}/${centerCity}/${centerID}/`)
+  database_getCenterStatus.update({
+    center_status:"true"
+  })
 }
 
 
@@ -139,9 +149,9 @@ import {app} from '../firebaseConfig'
               <button className="btn dr_custome dropdown-toggle" type="button" data-toggle="dropdown">Wellcome
                 <span className="caret" /></button>
               <ul className="dropdown-menu">
-                <li><a href="#">HTML</a></li>
-                <li><a href="#">CSS</a></li>
-                <li><a href="#">JavaScript</a></li>
+                <li><a href="#"> Logout</a></li>
+                <li><a href="#"> Language</a></li>
+                <li><a href="#"> Setting</a></li>
               </ul>
             </div>
 

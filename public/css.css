@@ -29,7 +29,8 @@ html{
     max-height: 100vh;
     padding: 0;
     position: relative;
-
+    box-shadow: 2px 0px 5px 0px #08050575;
+    z-index: 10;
 }
 
 .map{
@@ -54,7 +55,7 @@ html{
 
 
 .img_log{
-    width: 275px;
+    width: 235px;
     position: relative;
     left: -14px;
 
@@ -158,6 +159,7 @@ div > ul > li.cts-li:last-child{
 }
 .div-logo{
     background-image: linear-gradient(to top, #00c6fb 0%, #005bea 100%);
+    padding: 17px;
 }
 .div-item{
     background-image: linear-gradient(to bottom, #00c6fb 0%, #005bea 100%);
@@ -462,7 +464,7 @@ h2 {
     position: relative;
     text-decoration: none;
     font-size: 17px;
-
+    color: gray;
 }
 .user-address:hover{
     text-decoration: none;
@@ -535,7 +537,7 @@ h2 {
 }
 
 .modal-contain{
-    margin-top: 70px;
+    margin-top: 64px;
     margin-left: 15px;
 
 }
@@ -922,8 +924,8 @@ outline: none;
 
 
 .authority_form {
-    width: 260px;
-    height: 320px;
+    width: 330px;
+    height: 456px;
     position: fixed;
     right: 6px;
     top: 51px;
@@ -964,9 +966,7 @@ outline: none;
     box-sizing: border-box;
     width: 100%;
     margin-top: 0px;
-    height: 257px;
-    overflow-y: scroll;
-    overflow-x: hidden;
+    height: 420px;
 }
 
 .btn_dele_team:focus,.btn_dele_team:visited,.btn_dele_team:active{
@@ -1061,4 +1061,29 @@ outline: none;
     height: 100%;
     background-repeat: none;
     background-size: contain;
+}
+.location{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-end;
+}
+
+.m_left1{
+    margin-left: 44px;
+}.m_left2{
+    margin-left: 41px;
+    
+}.m_left3{
+    margin-left: 24px;
+    
+}
+.wrap-ct {
+    padding: 10px;
+    border-radius: 3px;
+    margin-bottom: 27px;
+    position: relative;
+    border: none;
+    background-color: whitesmoke;
+    box-shadow: #CCCCCC 6px 7px 3px -4px; 
 }

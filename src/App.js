@@ -48,6 +48,9 @@ return(
             <Route path={'/'}  exact = {false}>
             {isLogin ? <Main /> :<Redirect to="/login-register" /> }
             </Route>
+            <Route path={'/homepage'}  exact = {false}>
+            {isLogin ? <Main /> :<Redirect to="/login-register" /> }
+            </Route>
             </Switch>
 </Router>
 

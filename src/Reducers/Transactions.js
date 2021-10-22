@@ -1,15 +1,15 @@
 const initialState = {
     status: false,
-    transaction_id: ""  
-};
+    request_data: {}
+}
 
 const currentPage = (state = initialState, action) => {
     switch (action.type) {
         case "Action_SetData_For_Authority":
             {
               state = {
-                   status:true,
-                  transaction_id:action.data
+                status:true,
+                request_data:action.data
              }
               return state
             }

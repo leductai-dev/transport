@@ -20,7 +20,8 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
         integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
         crossorigin="" />
-  
+        <link rel="stylesheet" type="text/css"
+        href="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.css">
 
 
 
@@ -45,9 +46,19 @@
         $('[data-toggle="delete team"]').tooltip();
       });
       </script>
+       <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+       <script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet/0.0.1-beta.5/esri-leaflet.js"></script>
+       <script
+           src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.js"></script>
+
+
+
     <script>
     window.onload =function(){
-    
+
+
+
+
 var items =document.getElementsByClassName("li-item");
 	Array.from(items).forEach(item=>{
 	item.addEventListener('click',function(){
@@ -61,7 +72,25 @@ var items =document.getElementsByClassName("li-item");
 })
 
 
+
+
     }
+   
+document.addEventListener('onload',function(){
+
+
+    console.log("111111111111111111111")
+    var btnv = document.getElementsByClassName('nav-link');
+    console.log(btnv)
+  Array.from(btnv).forEach(btn=>{
+    console.log("dfsdfsdf")
+    btn.addEventListener('click',function(){
+    console.log("hellox")
+});
+})
+        })
+  
+
     
 
    

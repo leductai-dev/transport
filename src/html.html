@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Esri Leaflet Geocoder</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+    <script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet/0.0.1-beta.5/esri-leaflet.js"></script>
+    <script
+        src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.js"></script>
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.css">
+
+
+    <!-- Make the map fill the entire page -->
+    <style>
+        body,
+        html {
+            height: 100%;
+            font-family: Arial;
+        }
+
+        #mapSearchContainer {
+            position: fixed;
+            top: 20px;
+            right: 40px;
+            height: 30px;
+            width: 180px;
+            z-index: 110;
+            font-size: 10pt;
+            color: #5d5d5d;
+            border: solid 1px #bbb;
+            background-color: #f8f8f8;
+        }
+
+        .pointer {
+            position: absolute;
+            top: 86px;
+            left: 60px;
+            z-index: 99999;
+        }
+
+        .geocoder-control.leaflet-control {
+            position: absolute;
+            top: 10px;
+        }
+
+        .geocoder-control-input.leaflet-bar {
+            width: 500px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px;
+            box-sizing: border-box;
+            height: 35px;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            position: relative;
+
+        }
+
+        #map>* {
+            width: 100%;
+        }
+
+        #map>*> :first-child {
+            width: 100%;
+        }
+
+        #map>*>*> :last-child {
+            width: 100%;
+        }
+
+        .geocoder-control-suggestions {
+            width: 500px;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 30px;
+        }
+
+
+        .main {
+            min-height: 100vh;
+        }
+
+        .modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vw;
+            height: 80vh;
+            min-height: 500px;
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <div class="modal">
+            <div class='map-modal' id="map">
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Initialize the map and assign it to a variable for later use
+        var map = L.map('map', {
+            // Set latitude and longitude of the map center (required)
+            center: [16.04868738504644, 108.20296304994486],
+            // Set the initial zoom level, values 0-18, where 0 is most zoomed-out (required)
+            zoom: 6
+        });
+
+        L.control.scale().addTo(map);
+
+        // Create a Tile Layer and add it to the map
+        //var tiles = new L.tileLayer('http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png').addTo(map);
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var searchControl = new L.esri.Controls.Geosearch().addTo(map);
+
+        var results = new L.LayerGroup().addTo(map);
+
+        searchControl.on('results', function (data) {
+            results.clearLayers();
+            for (var i = data.results.length - 1; i >= 0; i--) {
+                results.addLayer(L.marker(data.results[i].latlng));
+                console.log(data)
+            }
+        });
+
+        setTimeout(function () { $('.pointer').fadeOut('slow'); }, 3400);
+    </script>
+
+</body>
+
+</html>

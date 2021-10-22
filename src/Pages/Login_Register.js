@@ -44,10 +44,14 @@ class LoginRegister extends Component {
 
         app.auth().createUserWithEmailAndPassword(center_email, pass)
          .then((user) => {
+
         alert("Đăng kí tài khoản thành công")
+        console.log(user)
+        console.log(app.auth().currentUser.l)
         var user = app.auth().currentUser;
         if (user != null) {
             user.providerData.forEach(function (profile) {
+              console.log(profile)
             });
           }
         db_CenterTeam.set({
@@ -81,6 +85,9 @@ class LoginRegister extends Component {
          })
         app.auth().signInWithEmailAndPassword(center_email, pass)
         .then((user) => {
+          console.log("login`")
+          console.log(user)
+        
             var user = app.auth().currentUser;
                 user.updateProfile({
                     displayName:generatorID,

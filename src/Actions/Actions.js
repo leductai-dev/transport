@@ -22,8 +22,6 @@ export const Set_Team =(data)=>{
 
 
 
-var dispatchCount = true;
-
 export const Read_Data = ()=>{
             return (dispatch)=>{
                 const database = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/InforTeam`)
@@ -31,14 +29,23 @@ export const Read_Data = ()=>{
                 .then(function(dataSnapshot) {
                 const teamFirst = Object.keys(dataSnapshot.val())[0]
                 dispatch(Action_SetData(dataSnapshot.val()));
-                console.log("gọi lên server")
-                if(dispatchCount){
+                console.log("gọi lên server của hàm once")
                 dispatch(Set_Team(teamFirst))
-                }
-                dispatchCount =false
                 });
             }
 }
+export const On_Read_Data = ()=>{
+    return (dispatch)=>{
+        const database = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/InforTeam`)
+        return  database.once('value')
+        .then(function(dataSnapshot) {
+        dispatch(Action_SetData(dataSnapshot.val()));
+        console.log("gọi lên server của hàm on")
+        });
+    }
+}
+
+
 
 
 export const Read_Data_Information = ()=>{
@@ -46,7 +53,6 @@ export const Read_Data_Information = ()=>{
         const database = app.database().ref().child(`InfomationCenter/${localStorage.getItem('centerID')}/`)
         return  database.once('value')
         .then(function(dataSnapshot) {
-         console.log(JSON.stringify(dataSnapshot.val()));
         dispatch(Action_SetData_Information(dataSnapshot.val()));
         });
     }
@@ -68,3 +74,10 @@ export const UserLogin =(user)=>{
     })
 } 
 
+
+export const SetUserLocation =(location)=>{
+    return({
+        type : 'Action_Set_UserLocation',
+         payload: location
+    })
+} 

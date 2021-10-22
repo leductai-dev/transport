@@ -3,48 +3,57 @@ import ListTeam from '../Components/listTeam'
 import Member from '../Components/member'
 import Li_Listteam from '../Components/li_listTeam'
 import { connect } from 'react-redux'
-import {Set_Page,Read_Data,Set_Team} from './../Actions/Actions'
+import {Set_Page,Read_Data,Set_Team,On_Read_Data} from './../Actions/Actions'
 import {app} from '../firebaseConfig'
-
+import $ from 'jquery';
 class ManagerTeam extends Component {
   constructor(props) {
      super(props);
      this.countTeam = 0
      this.codeTeam =1000
+     this.teamName =""
      this.state ={
          currentTeam:"",
          countTeam:null,
          teamName: "firtvalue"
      }
+    
      
   }
   componentDidMount(){
-    const self = this
+    var allow = true
+    console.log("component didmount")
     this.props.setPage(4);
     var database = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/InforTeam/`)
-    database.on('value', (dataSnapshot)=> {
-      this.props.getData();
-    })
-
-  const databaseInfo = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/InforTeam/${this.props.infos.currentTeam}`)
-  databaseInfo.once('value',function(datasnapshot){
-    /* console.log(datasnapshot.val().team_name) */
-    if(datasnapshot.val()){
-      self.setState({
-        teamName : datasnapshot.val().team_name
-      }) 
-      console.log("yes")
-    }
-    else{
-      console.log("nothing")
-    }
     
-  })
+    database.on('value', (dataSnapshot)=> {
+      if(allow){
+        this.props.getData();
+        allow = false
+      }
+      else{
+        this.props.On_getData();
+      }
+    })
+  
+  }
+
+
+  static getDerivedStateFromProps(nextProps, prevState){
+ }
+
+  componentDidUpdate(){
+}
+
+
+  countTeams = ()=>{
+    if(this.props.infos.dataCenter){
+      this.countTeam = Object.values(this.props.infos.dataCenter).length
+    }
   }
 
   setCurrentTeam=(code,name)=>{
     this.props.setTeam(code)
-    console.log(name)
     this.setState({
       currentTeam:code,
       teamName:name
@@ -75,7 +84,6 @@ class ManagerTeam extends Component {
   const infos = this.props.infos.dataCenter
   var active=2
   var result = Object.values(infos).map((value,index)=>{ 
- 
     active--;
     if(active<1){ 
       active =0
@@ -104,9 +112,31 @@ createNewTeam=()=>{
     alert("Số team nhiều nhất có thể là 5")
   }
   else{
+
+    $(".tab-container").on('DOMNodeInserted', function(e) {
+     if(e.target.classList)
+     e.target.classList.add("active")
+    });
+    $(".nav-tabs").on('DOMNodeInserted', function(e) {
+      console.log("Chạy ở đây")
+      if(e.target.querySelector('[href]'))
+    e.target.querySelector('[href]').classList.add("active")
+   
+    });
+   
+    if( document.querySelector('li.nav-item > a.active')){
+      document.querySelector('li.nav-item > a.active').classList.remove('active')
+      document.querySelector('div.tab-content > div.active').classList.remove('active')
+      
+    }
+    this.setState({
+      teamName:"Vehicle type"
+    })
+
     this.countTeam++
     this.codeTeam = +this.codeTeam+1
     const idTeam = "z"+this.codeTeam+"z"
+    this.props.setTeam(idTeam)
     this.databaseInfo = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/InforTeam/${idTeam}`)
       this.databaseInfo.set({
         status_active:false,
@@ -115,7 +145,9 @@ createNewTeam=()=>{
         Mission:{
           status:"false"
         },
-        team_name:"New Team*"
+        team_name:"Vehicle Type",
+        team_latitude:"",
+        team_longitude:"",
       })
       this.databaseTransaction = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/Transactions/${idTeam}`)
       this.databaseTransaction.set({
@@ -126,6 +158,7 @@ createNewTeam=()=>{
           user_latitude:"",
           name:"",
           phone:"",
+          team_name:"Vehicle Type"
       })
   }
 
@@ -134,31 +167,66 @@ createNewTeam=()=>{
 
 deleTeam=()=>{
   const infos = this.props.infos.dataCenter
+  if(Object.values(infos).length){
+  
+   
   this.countTeam = Object.values(infos).length
   if(this.countTeam==1){
-    const databaseInfo = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/`)
-    databaseInfo.update({
+    const databaseInformation = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/`)
+    databaseInformation.update({
       InforTeam:""
+    })
+    const databaseTransactions = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/`)
+    databaseTransactions.update({
+      Transactions:""
     })
     this.countTeam=0
   }else{
+  var listCodeTeam = []
+  listCodeTeam = Object.values(infos).map((value,index)=>{
+    return value.code
+  })
+  const vt = listCodeTeam.indexOf(this.props.infos.currentTeam)
+  if(Object.keys(infos)[vt+1]){
+    this.props.setTeam(Object.keys(infos)[vt+1])
+  }
+  else{
+    this.props.setTeam(Object.keys(infos)[vt-1])
+   document.querySelector(`[href='#index${vt-1}'`).classList.add('active')
+   document.querySelector(`#index${vt-1}`).classList.add('active')
+  }
+
   this.countTeam--
   const databaseInfo = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/InforTeam/${this.props.infos.currentTeam}`)
   databaseInfo.remove()
+  const databaseTransaction = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/Transactions/${this.props.infos.currentTeam}`)
+  databaseTransaction.remove()
 }
-const databaseTransaction = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/Transactions/${this.props.infos.currentTeam}`)
-databaseTransaction.remove()
 }
+else{
+  alert("Không có team nào để xóa!!")
+}
+}
+
+
 viewCode=()=>{
   alert("Enter This Code On The Mobile App To Login:   "+this.props.infos.currentTeam)
 }
 
-updateName =()=>{
+/* updateName =()=>{
+
+  const databaseTransaction =app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/Transactions/${this.props.infos.currentTeam}/`)
+  databaseTransaction.update({
+    team_name: this.state.teamName
+  })
+
   const database_UpdateTeamName = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/InforTeam/${this.props.infos.currentTeam}/`)
   database_UpdateTeamName.update({
     team_name: this.state.teamName
   })
-}
+ 
+
+} */
 
 
 nameChange = (event)=>{
@@ -167,9 +235,19 @@ nameChange = (event)=>{
   this.setState({
     [name]: value
   })
+  const database_Transaction =app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/Transactions/${this.props.infos.currentTeam}/`)
+  database_Transaction.update({
+    team_name:event.target.value
+  })
+  const database_UpdateTeamName = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/InforTeam/${this.props.infos.currentTeam}/`)
+  database_UpdateTeamName.update({
+    team_name:  event.target.value
+  })
+  
 }
   
     render() {
+      console.log("component render")
         return (
         <div className="flex-grow-1 map">
           <div className="contain">
@@ -200,7 +278,7 @@ nameChange = (event)=>{
                     <i class="fa fa-eye" aria-hidden="true"></i>
             </button>
             <button onClick={()=>{this.deleTeam()}}
-                    className="ml-auto btn_dele_team btn-danger btn_view "
+                    className="ml-auto btn_dele_team btn-danger btn_view " id="btnv"
                     data-toggle="delete team" data-placement="bottom" 
                     title="Deleted This Team!"
                     >
@@ -210,6 +288,9 @@ nameChange = (event)=>{
             </ul>
             <div className=" tab-content tab-container">
                {this.listTeam_render()}
+               {
+                  this.countTeams()
+               }
             </div>
           </div>
         </div>
@@ -228,6 +309,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
       getData: () => {
           dispatch(Read_Data());
+      },
+      On_getData:() =>{
+        dispatch(On_Read_Data());
       },
       setPage: (page) => {
         dispatch(Set_Page(page));

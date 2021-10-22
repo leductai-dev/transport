@@ -6,7 +6,7 @@ export const generatorTime = ()=>{
     var hour = today.getHours();
     var minute = today.getMinutes()<10?"0"+today.getMinutes():today.getMinutes()
     var ap = today.getHours()>=12?"PM":"AM"
-    today = hour+':'+minute+' '+ap+' '+ mm + '/' + dd + '/' + yyyy;
+    today = hour+':'+minute+ap+' '+ dd + '/' + mm + '/' + yyyy;
     return today
   }
   
