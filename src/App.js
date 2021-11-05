@@ -1,92 +1,73 @@
-import React, { useState,useEffect } from 'react';
-import Menu from './Components/menu.js';
-import routes from './Routes'
-import Header from './Components/header.js'
-import Request from './Components/request'
-import LoginRegister from './Pages/Login_Register'
+import React, { useState, useEffect } from "react";
+import Menu from "./Components/menu.js";
+import routes from "./Routes";
+import Header from "./Components/header.js";
+import Request from "./Components/request";
+import LoginRegister from "./Pages/Login_Register";
 import { useDispatch, useSelector } from "react-redux";
-import Main from './Apps2'
-import {app} from './firebaseConfig'
-import {Get_DataUserLogin,} from './Actions/Actions'
+import Main from "./Apps2";
+import { app } from "./firebaseConfig";
+import { Get_DataUserLogin } from "./Actions/Actions";
 
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-} from "react-router-dom";
-import Home from './Pages/Home';
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import Home from "./Pages/Home";
 import { Redirect } from "react-router-dom";
+
 function App() {
-  
+    var [isLogin, setisLogin] = useState(true);
 
-  var [isLogin, setisLogin] = useState(true)
+    useEffect(() => {
+        let count =  0
+        const db_Transactions = app.database().ref().child(`/system/transactions/pending`)
+        db_Transactions.on("value", (snap) => {
+            if(snap.val()){
+                if(count > 0){
+                    alert("Count bang 1")
+                }else{
+                    count++
+                }
+            }
+        });
+    }, []);
 
-  useEffect(() => {
-    
-  }, [])
+    // app.auth().onAuthStateChanged(function (user) {
+    //     if (user) {
+    //         setisLogin(true);
+    //         console.log("đã login");
+    //     } else {
+    //         setisLogin(false);
+    //         console.log("chưa login");
+    //     }
+    // });
 
-  app.auth().onAuthStateChanged(function(user) {
-    if(user) {
-      setisLogin(true)
-      console.log("đã login")
-    }
-    else{
-      setisLogin(false)
-      console.log("chưa login")
-    }}
-    )
-
-  
-  
-
-return(
-  <Router> 
-         <Switch>
-              <Route path={'/login-register'}  exact = {false}>
-              {!isLogin ?  <LoginRegister/> :<Redirect to="/" /> }
-              </Route> 
-            <Route path={'/'}  exact = {false}>
-            {isLogin ? <Main /> :<Redirect to="/login-register" /> }
-            </Route>
-            <Route path={'/homepage'}  exact = {false}>
-            {isLogin ? <Main /> :<Redirect to="/login-register" /> }
-            </Route>
-            </Switch>
-</Router>
-
+    return (
+        <Router>
+            <div className="row h-100 bg_main ">
+                <Menu />
+                <div
+                    id="tmp_id"
+                    className="col-md-10 h-100 customize-layout-right d-flex flex-column"
+                >
+                    <Redirection />
+                </div>
+            </div>
+            {/* <Request></Request> */}
+        </Router>
     );
-  }
-
- /*  <Main />  */
-
-/*   app.auth().onAuthStateChanged(function(user) {
-    if(user)
-    {
-      <Router> 
-      <Switch>
-         <Route path={'/'}  exact = {false}>
-      <Main /> 
-         </Route>
-       
-     </Switch>
-   </Router>
-    }
-    else{
-      alert("nope")
-  
-    }
-  })
-  )} */
-
- 
-/* function Redirection(){
-  var result = null;
-  result = routes.map((route,index)=>{
-    return <Route path={route.path}  key={index} exact = {route.exact}>
-      {route.page} 
-    </Route>
-  });
-  return  <Switch>{result}</Switch>;
-} */
+}
+function Redirection() {
+    var result = null;
+    result = routes.map((route, index) => {
+        return (
+            <Route
+                path={route.path}
+                component={route.page}
+                key={index}
+                exact={route.exact}
+            ></Route>
+        );
+    });
+    return <Switch>{result}</Switch>;
+}
 
 export default App;

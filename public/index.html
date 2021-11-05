@@ -1,100 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Web site created using create-react-app"/>
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <title>Rescue System</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Web site created using create-react-app" />
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+  <title>Rescue System</title>
 
-    <link rel="stylesheet" href="%PUBLIC_URL%/login.css">
-    <link rel="stylesheet" href="%PUBLIC_URL%/css.css">
-    <link rel="stylesheet" href="%PUBLIC_URL%/signal.css">
-    <link rel="stylesheet" href="%PUBLIC_URL%/effect.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="%PUBLIC_URL%/login.css">
+  <link rel="stylesheet" href="%PUBLIC_URL%/css.css">
+  <link rel="stylesheet" href="%PUBLIC_URL%/signal.css">
+  <link rel="stylesheet" href="%PUBLIC_URL%/effect.css">
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-        crossorigin="" />
-        <link rel="stylesheet" type="text/css"
-        href="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin="" />
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.css">
+    <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+  />
+  <link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/icon?family=Material+Icons"
+/>
 
 
+</head>
 
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root" class="container-fluid main-layout"></div>
+<body>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root" class="container-fluid main-layout"></div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase.js"></script>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
     crossorigin=""></script>
-    <script src="%PUBLIC_URL%/js.js"></script>
-    <script>
-      $(document).ready(function(){
-        $('[data-toggle="delete team"]').tooltip();
-        $('[data-toggle="addteam"]').tooltip();
-        $('[data-toggle="delete team"]').tooltip();
-      });
-      </script>
-       <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
-       <script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet/0.0.1-beta.5/esri-leaflet.js"></script>
-       <script
-           src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.js"></script>
+  <script src="%PUBLIC_URL%/js.js"></script>
+  <script>
+    $(document).ready(function () {
+      $('[data-toggle="delete team"]').tooltip();
+      $('[data-toggle="addteam"]').tooltip();
+      $('[data-toggle="delete team"]').tooltip();
+    });
+  </script>
+  <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+  <script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet/0.0.1-beta.5/esri-leaflet.js"></script>
+  <script
+    src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.js"></script>
 
 
 
-    <script>
-    window.onload =function(){
+  <script>
+    window.onload = function () {
 
 
 
 
-var items =document.getElementsByClassName("li-item");
-	Array.from(items).forEach(item=>{
-	item.addEventListener('click',function(){
-		Array.from(items).forEach(item=>{
-			item.classList.remove("active");
-    })
-    item.classList.add("active");
-    $(".a-item" ).first().trigger("click");
-});
-	
-})
+      var items = document.getElementsByClassName("li-item");
+      Array.from(items).forEach(item => {
+        item.addEventListener('click', function () {
+          Array.from(items).forEach(item => {
+            item.classList.remove("active");
+          })
+          item.classList.add("active");
+          $(".a-item").first().trigger("click");
+        });
+
+      })
 
 
 
 
     }
-   
-document.addEventListener('onload',function(){
+
+    document.addEventListener('onload', function () {
 
 
-    console.log("111111111111111111111")
-    var btnv = document.getElementsByClassName('nav-link');
-    console.log(btnv)
-  Array.from(btnv).forEach(btn=>{
-    console.log("dfsdfsdf")
-    btn.addEventListener('click',function(){
-    console.log("hellox")
-});
-})
-        })
-  
+      console.log("111111111111111111111")
+      var btnv = document.getElementsByClassName('nav-link');
+      console.log(btnv)
+      Array.from(btnv).forEach(btn => {
+        console.log("dfsdfsdf")
+        btn.addEventListener('click', function () {
+          console.log("hellox")
+        });
+      })
+    })
 
-    
 
-   
 
-    </script>
-  </body>
+
+
+
+  </script>
+</body>
+
 </html>

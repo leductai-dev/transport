@@ -1,27 +1,17 @@
-const initialState = {
-    status: false,
-    request_data: {}
-}
+const initialState = null
 
-const currentPage = (state = initialState, action) => {
+const transactions = (state = initialState, action) => {
     switch (action.type) {
-        case "Action_SetData_For_Authority":
+        case "Action_Set_Data_Transaction":
             {
-              state = {
-                status:true,
-                request_data:action.data
-             }
-              return state
+             const newState =action.data 
+              return newState
             }
-        case "Action_SetStatus2":
-                {
-                  state = {...state,status:action.payload}
-                  return state
-                 }
+       
         default:
             return state
     }
 }
-export default currentPage;
+export default transactions;
 
 

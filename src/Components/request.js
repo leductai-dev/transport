@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import {app} from '../firebaseConfig'
 import { connect } from 'react-redux'
-import {Set_Data} from '../Actions/Action_transactions'
+// import {Set_Data} from '../Actions/Action_transactions'
 import {SetUserLocation} from '../Actions/Actions'
 
 import {generatorTime} from '../Utils/Time_generator'
@@ -25,7 +25,7 @@ class request extends Component {
       if(this.centerID){
         this.database_GetUserID.on('value', (dataSnapshot)=> {  //Lắng nghe request từ user, nếu có id user
           if(dataSnapshot.val().user_id)  
-          {
+          { 
             var a = localStorage.getItem('userLatitude')
             var b = localStorage.getItem('userLongitude')
             console.log(typeof a);
@@ -183,7 +183,7 @@ const mapStateToProps = (state) => {
   const mapDispatchToProps = (dispatch, ownProps) => {
     return {
       setData: (data) => {
-        dispatch(Set_Data(data));   //Action lưu id transaction vào reducer
+        // dispatch(Set_Data(data));   //Action lưu id transaction vào reducer
     },
     setLocation:(location)=>{
       dispatch(SetUserLocation(location)); 

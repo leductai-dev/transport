@@ -1,10 +1,10 @@
-export const HomeName ="Home"
-export const HistoryName ="History"
-export const ManagerName ="Manager Team"
-export const DashboardName ="Dashboard"
-export const HelpName ="Help"
-export const SettingName ="Setting"
-export const ProfileName ="Profile"
+export const HomeName ="Trang chủ"
+export const HistoryName ="Quản lý giao dịch"
+export const ManagerName ="Quản lý thành viên"
+export const DashboardName ="Thông kê"
+export const HelpName ="Trợ giúp"
+export const SettingName ="Cài đặt"
+export const ProfileName ="Thông tin"
 
 
 export const HomeImg ="./png/map .png"

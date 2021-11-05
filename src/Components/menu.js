@@ -39,13 +39,13 @@ const menuLink = [
     },
     {
         "namePage": constant.HelpName,
-        "to":"/help",
+        "to":"/helps",
         "exact":false,
         "img":constant.HelpImg
     },
     {
         "namePage":constant.SettingName,
-        "to":"/setting",
+        "to":"/settinge",
         "exact":false,
         "img":constant.SettingImg
     },

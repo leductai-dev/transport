@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import {app} from '../firebaseConfig'
 import { connect } from 'react-redux'
 import Team from './authoriryTeam'
-import {Set_Status} from '../Actions/Action_transactions'
+// import {Set_Status} from '../Actions/Action_transactions'
 import {SetUserLocation} from '../Actions/Actions'
 
 class authority extends Component {
@@ -119,7 +119,7 @@ const mapStateToProps = (state) => {
   const mapDispatchToProps = (dispatch, ownProps) => {
     return {
     hide: () => {
-        dispatch(Set_Status());
+        // dispatch(Set_Status());
     },
     setLocation: (location) => {
         dispatch(SetUserLocation(location));

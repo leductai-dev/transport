@@ -19,10 +19,7 @@ export const Component = (props) => {
         </div>
         </div> 
         <Request></Request>
-       {/*  <h2>Lalala</h2>
-        <Router> 
-        <Redirection/> 
-      </Router> */}
+ 
         </>
     )
 }

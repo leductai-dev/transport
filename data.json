@@ -1,0 +1,204 @@
+{
+    "system": {
+        "transactions": {
+            "pending": {
+                "4ab2-32as-ds11": {
+                    "transactionId": "1fgf-32as-ds32",
+                    "transportCode": "TP-111-824",
+                    "customerId": "1fgf-32as-ds32",
+                    "initialTime": 1634956726760,
+                    "endTime": 1634956726760,
+                    "shippingInfo":{
+                        "senderName": "",
+                        "senderPhone": "",
+                        "receiverName": "",
+                        "receiverPhone": "",
+                        "fromAddress": "Address 1",
+                        "toAddress": "Address 1",
+                        "fromLat": "16.158445",
+                        "toLat": "16.158445",
+                        "fromLong": "108.04522888",
+                        "toLong": "108.04522888",
+                        "note": "Loerem is suare mactiorn codar",
+                        "productInfo": {
+                            "productName": "",
+                            "weight": 200,
+                            "length": 5,
+                            "width": 5,
+                            "height": 5,
+                            "imageUrl": ""
+                        }
+                    }
+                }
+            },
+            "inProgress": {
+                "1fgf-32as-ds32": {
+                    "transactionId": "1fgf-32as-ds32",
+                    "transportCode": "TP-546-824",
+                    "customerId": "1fgf-32as-ds32",
+                    "driverId": "1fgf-32as-ds32",
+                    "initialTime": 1634956726760,
+                    "endTime": 1634956726760,
+                    "fromAddress": {
+                        "address": "Address 1",
+                        "lat": "16.0758445",
+                        "long": "108.14522888"
+                    },
+                    "toAddress": {
+                        "address": "Address 1",
+                        "lat": "16.0758445",
+                        "long": "108.14522888"
+                    },
+                    "currentLocation": {
+                        "lat": "16.0758445",
+                        "long": "108.14522888"
+                    },
+                    "note": "Loerem is suare mactiorn codar",
+                    "productInfo": {
+                        "productName": "",
+                        "weight": 200,
+                        "length": 5,
+                        "width": 5,
+                        "height": 5,
+                        "imageUrl": 5
+                    }
+                },
+                "4ab2-32as-ds11": {
+                    "transactionId": "1fgf-32as-ds32",
+                    "transportCode": "TP-111-824",
+                    "customerId": "1fgf-32as-11",
+                    "driverId": "1fgf-32as-1111",
+                    "initialTime": 1634956726760,
+                    "endTime": 1634956726760,
+                    "fromAddress": {
+                        "address": "Address 3",
+                        "lat": "16.00158445",
+                        "long": "108.04522888"
+                    },
+                    "toAddress": {
+                        "address": "Address 4",
+                        "lat": "16.0558445",
+                        "long": "108.14522888"
+                    },
+                    "currentLocation": {
+                        "lat": "16.0758445",
+                        "long": "108.10522888"
+                    },
+                    "note": "Loerem is suare mactiorn codar",
+                    "productInfo": {
+                        "productName": "",
+                        "weight": 200,
+                        "length": 5,
+                        "width": 5,
+                        "height": 5,
+                        "imageUrl": 5
+                    }
+                }
+            },
+            "completed": {}
+        }
+    },
+    "drivers": {
+        "1fgf-32as-ds32": {
+            "driverId": "1fgf-32as-ds32",
+            "status": true,
+            "currentLocation": {
+                "lat": "16.0758445",
+                "long": "108.14522888"
+            },
+            "driverInfo": {
+                "name": "1fgf-32as-ds32",
+                "email": "1fgf-32as-ds32",
+                "phone": "1fgf-32as-ds32",
+                "address": "Lorem is suare",
+                "sex": "male",
+                "dateofbirth": "01-05-1999"
+            },
+            "vehicleInfo": {
+                "licensePlates": "A784-52015",
+                "vehicleName": "Xe Tải JAC 2 tấn",
+                "maxPayload": 500,
+                "containerSize": {
+                    "length": 3,
+                    "width": 2,
+                    "height": 2
+                }
+            }
+        },
+        "1fgf-32as-1111": {
+            "driverId": "1fgf-32as-ds32",
+            "status": true,
+            "currentLocation": {
+                "lat": "16.0758445",
+                "long": "108.14522888"
+            },
+            "driverInfo": {
+                "name": "1fgf-32as-ds32",
+                "email": "1fgf-32as-ds32",
+                "phone": "1fgf-32as-ds32",
+                "address": "Lorem is suare",
+                "sex": "male",
+                "dateofbirth": "01-05-1999"
+            },
+            "vehicleInfo": {
+                "licensePlates": "A784-52015",
+                "vehicleName": "Xe Tải JAC 2 tấn",
+                "maxPayload": 500,
+                "containerSize": {
+                    "length": 3,
+                    "width": 2,
+                    "height": 2
+                }
+            }
+        }
+    },
+    "customers": {
+        "1fgf-32as-ds32": {
+            "customerId": "1fgf-32as-ds32",
+            "name": "1fgf-32as-ds32",
+            "email": "1fgf-32as-ds32",
+            "phone": "1fgf-32as-ds32",
+            "joinDate": 1634956726760,
+            "history": {
+                "1fgf-32as-ds32": {
+                    "transactionId": "1fgf-32as-ds32",
+                    "transportCode": "TP-546-824",
+                    "customerId": "1fgf-32as-ds32",
+                    "driverId": "1fgf-32as-ds32",
+                    "initialTime": 1634956726760,
+                    "endTime": 1634956726760,
+                    "fromAddress": {
+                        "address": "Address 1",
+                        "lat": "16.0758445",
+                        "long": "108.14522888"
+                    },
+                    "toAddress": {
+                        "address": "Address 1",
+                        "lat": "16.0758445",
+                        "long": "108.14522888"
+                    },
+                    "currentLocation": {
+                        "lat": "16.0758445",
+                        "long": "108.14522888"
+                    },
+                    "note": "Loerem is suare mactiorn codar",
+                    "productInfo": {
+                        "productName": "",
+                        "weight": 200,
+                        "length": 5,
+                        "width": 5,
+                        "height": 5,
+                        "imageUrl": 5
+                    }
+                }
+            }
+        }
+    }
+}
+
+tổng tại trọng
+thể tích thùng chứa
+
+Tìm xe gợi ý:
+ + Vét cạn thể tích thùng chứa
+ + Tổng trọng lượng mặc hàng so với tải trọng tối đa

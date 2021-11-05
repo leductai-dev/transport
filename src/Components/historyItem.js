@@ -1,16 +1,14 @@
 import React, { Component } from 'react'
 
-export default class historyItem extends Component {
-    render() {
-        console.log(this.props.date);
+export default function HistoryItem({data}) {
         return (
             <div className="list-group contact-group">
                     <div id="list" className="wrap-ct clearfix">
                       <div className="circle"><img className="user-img" src="./png/avatar.jpg" alt="" /></div>
                       <div className="user-info">
-                        <p className="user-name">{this.props.name}</p>
-                        <p className="time">{this.props.date}</p>
-                        <p className="user-address"><i className="fa fa-map-marker" style={{fontSize: '27px'}} aria-hidden="true" />{this.props.address}</p>
+                        <p className="user-name">{"this.props.name"}</p>
+                        <p className="time">{"this.props.date"}</p>
+                        <p className="user-address"><i className="fa fa-map-marker" style={{fontSize: '27px'}} aria-hidden="true" />{"this.props.address"}</p>
 
                         <div>
                         <div id="demo" className="collapse">
@@ -25,4 +23,3 @@ export default class historyItem extends Component {
                   </div>
         )
     }
-}
