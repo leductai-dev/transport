@@ -41,12 +41,12 @@ export default function TransactionList({children}) {
                         }}
                     >
                         <Box sx={{ display: "table-row", paddingTop: '10px',paddingBottom: '10px',  mb: '5px' }}>
-                            <Box py={'10px'} sx={{ display: "table-cell", fontWeight: '600',  color: "#476282", }}>Ngày khởi tạo</Box>
-                            <Box py={'10px'} sx={{ display: "table-cell", fontWeight: '600',  color: "#476282", }}>Mã vận chuyển</Box>
-                            <Box py={'10px'} sx={{ display: "table-cell", fontWeight: '600',  color: "#476282", }}>Tên khách hàng</Box>
-                            <Box py={'10px'} sx={{ display: "table-cell", fontWeight: '600',  color: "#476282", }}>Số điện thoại</Box>
-                            <Box py={'10px'} sx={{ display: "table-cell", fontWeight: '600',  color: "#476282", }}>Trạng thái</Box>
-                            <Box py={'10px'} sx={{ display: "table-cell", fontWeight: '600',  color: "#476282", }}>Thao tác</Box>
+                            <Box py={'10px'} sx={{ display: "table-cell",textAlign:'center', fontWeight: '600',  color: "#476282", }}>Ngày khởi tạo</Box>
+                            <Box py={'10px'} sx={{ display: "table-cell",textAlign:'center', fontWeight: '600',  color: "#476282", }}>Mã vận chuyển</Box>
+                            <Box py={'10px'} sx={{ display: "table-cell",textAlign:'center', fontWeight: '600',  color: "#476282", }}>Tên khách hàng</Box>
+                            <Box py={'10px'} sx={{ display: "table-cell",textAlign:'center', fontWeight: '600',  color: "#476282", }}>Số điện thoại</Box>
+                            <Box py={'10px'} sx={{ display: "table-cell",textAlign:'center', fontWeight: '600',  color: "#476282", }}>Trạng thái</Box>
+                            <Box py={'10px'} sx={{ display: "table-cell",textAlign:'center', fontWeight: '600',  color: "#476282", }}>Thao tác</Box>
 
                         </Box>
                        {children}

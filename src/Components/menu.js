@@ -20,15 +20,21 @@ const menuLink = [
     
     {
         "namePage":constant.HistoryName,
-        "to":"/history",
+        "to":"/transactions",
         "exact":false,
         "img":constant.HistoryImg
     },
 
     {
         "namePage": constant.ManagerName,
-        "to":"/manager-team",
+        "to":"/manage-vehicle",
         "exact":false,
+        "img":constant.ManagerImg
+    },
+    {
+        "namePage": "Quản lý thành viên",
+        "to":"/manage-members",
+        "exact":true,
         "img":constant.ManagerImg
     },
     {
@@ -83,7 +89,7 @@ export default class Menu extends Component {
             <div className="col-md-2 h-100  customize-layout-left d-flex flex-column">
             <div className=" div-logo ">
               <a className="navbar-brand" href="/">
-                <img src="./logon.png" alt="logo" className="img_log" />
+                <img src="/logon.png" alt="logo" className="img_log" />
               </a>
             </div>
             <div className=" flex-grow-1 div-item">

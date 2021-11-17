@@ -1,31 +1,23 @@
-import React, { Component } from 'react'
-import ListTeam from '../Components/listTeam'
+import React, { Component, useEffect, useState } from 'react'
 import { connect } from 'react-redux'
-import { Set_Page, Read_Data, Set_Team, On_Read_Data } from './../Actions/Actions'
+import { Set_Page, Read_Data, Set_Team, On_Read_Data } from '../Actions/Actions'
 import { app } from '../firebaseConfig'
-import $ from 'jquery'
+import VehicleList from '../Components/ManageVehicle/VehicleList'
+import VehicleItem from '../Components/ManageVehicle/VehicleItem'
 
 import { Box, Text, Image, Button } from 'rebass'
 const ManagerTeam = () => {
     // var database = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/InforTeam/`)
+    const [data, setData] = useState(null)
 
-    const createNewMember = () => {
-        this.database = app
-            .database()
-            .ref()
-            .child(
-                `CenterTeam/${localStorage.getItem('centerID')}/InforTeam/${
-                    this.props.infos.currentTeam
-                }/members`
-            )
-        this.database.push({
-            name: 'Null',
-            phone: 'Null',
-            position: 'Null',
-            avatar: `./png/avatar_${Math.floor(Math.random() * 5) + 1}.jpg`,
+    useEffect(() => {
+        const db_Vehicles = app.database().ref().child('/vehicles')
+        db_Vehicles.on('value', (snap) => {
+            if (snap.val()) {
+                    setData(Object.values(snap.val()))
+            }
         })
-    }
-
+    }, [])
     return (
         <div className="flex-grow-1 map">
             <Box
@@ -39,15 +31,21 @@ const ManagerTeam = () => {
                     sx={{
                         fontSize: '30px',
                         fontWeight: 'bold',
+                        color: '#1b3a57',
                     }}
                     as="h1"
                 >
-                    Quản lý thành viên
+                    Quản lý phương tiện
                 </Text>
                 <hr style={{ marginTop: '5px', marginBottom: '0px' }} />
                 <Box>
                     <Box sx={{ paddingTop: '20px' }}>
-                        <ListTeam />
+                        <VehicleList>
+                            {data &&
+                                data.map((value, index) => (
+                                    <VehicleItem key={index} data={value} />
+                                ))}
+                        </VehicleList>
                     </Box>
                 </Box>
                 {/* <Box
@@ -58,3 +56,4 @@ const ManagerTeam = () => {
     )
 }
 export default ManagerTeam
+

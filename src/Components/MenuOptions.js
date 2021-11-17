@@ -45,24 +45,26 @@ export const MenuOption = ({ transactions }) => {
                 <Box
                     sx={{
                         padding: "5px 12px",
-                        borderBottom: "1px solid gray",
+                        borderBottom: "1px solid #476282",
                         fontSize: "20px",
                         color: "black",
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
+                        color: '#fff',
+                        background: '#0e5daa'
                     }}
                 >
-                    <Text sx={{}}>View Mode</Text>
+                    <Text sx={{ fontWeight: '600', }}>Chọn chế độ hiển thị</Text>
                     <Button
                         sx={{
                             backgroundColor: "transparent",
-                            fontSize: "18px",
+                            fontSize: "20px",
                             outline: "none !important",
                             border: "none",
-                            color: "black",
                             padding: 0,
-                        }}
+                            color: '#fff',
+                            }}
                         onClick={() => {
                             setShowOptions(false);
                         }}

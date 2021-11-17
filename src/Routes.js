@@ -1,15 +1,16 @@
 import React from 'react'
 import Home from './Pages/Home.js'
-import History from './Pages/Transactions.js'
-import ManagerTeam from  './Pages/ManagerTeam.js'
+import Transactions from './Pages/Transactions.js'
+import ManageVehicle from  './Pages/ManageVehicle.js'
 import Information from './Pages/Infomation'
 import Dashboard from './Pages/Dashboard'
 import Help from './Pages/Help'
 import Setting from './Pages/Setting'
 import TransactionDetail from './Pages/TransactionDetail'
+import AddVehicle from './Pages/AddVehicle'
 import Exit from './Pages/Exit'
 import NotFoundPage from './Pages/NotFoundPage.js'
-
+import ManageMember from './Pages/ManageMember'
 
 const routes = [
     {
@@ -23,14 +24,14 @@ const routes = [
         page: () => <Information/>
     },
     {
-        path: '/history',
-        exact : false,
-        page: () => <History/>
+        path: '/transactions',
+        exact : true,
+        page: () => <Transactions/>
     },
     {
-        path: '/manager-team',
+        path: '/manage-vehicle',
         exact : false,
-        page: ({history}) => <ManagerTeam/>
+        page: ({history}) => <ManageVehicle/>
     },
     {
         path: '/dashboard',
@@ -48,9 +49,19 @@ const routes = [
         page: () => <Setting/>
     },
     {
-        path: '/transaction-detail',
+        path: '/transaction/:id',
         exact : true,
         page: () => <TransactionDetail/>
+    },
+    {
+        path: '/vehicle/add-new',
+        exact : true,
+        page: () => <AddVehicle/>
+    },
+    {
+        path: '/manage-members',
+        exact : true,
+        page: () => <ManageMember/>
     },
     {
         path: '/exit',
