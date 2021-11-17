@@ -583,9 +583,6 @@ h2 {
     right: 0px;
     bottom: 0px;
 }
-img {
-    vertical-align: bottom !important;
-}
 
 .img-shadow:after{
     content: '';

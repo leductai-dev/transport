@@ -239,7 +239,6 @@ export const Component = (props) => {
         });
         return view;
     }
-
     };
 
     return (
