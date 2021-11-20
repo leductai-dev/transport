@@ -10,25 +10,7 @@ export default function History() {
     const [completed, setCompleted] = useState();
 
     useEffect(() => {
-        const db_Transactions = app
-            .database()
-            .ref()
-            .child("/system/transactions/");
-        db_Transactions.on("value", (snap) => {
-            console.log("snap---");
-            console.log(snap.val());
-            if (snap.val()) {
-                if (snap.val().pending) {
-                    setPending(Object.values(snap.val().pending));
-                }
-                if (snap.val().inProgress) {
-                    setProgress(Object.values(snap.val().inProgress));
-                }
-                if (snap.val().completed) {
-                    setCompleted(Object.values(snap.val().completed));
-                }
-            }
-        });
+       
     }, []);
 
     console.log("pending")
@@ -118,24 +100,16 @@ export default function History() {
                         </ul>
                         <div className=" tab-content tab-container">
                             <div id="all" className="container tab-pane active">
-                                <TransactionList>
-                                {pending && pending.map((value, index) =><TransactionItem
-                                                key={index}
-                                                data={value}
-                                            />
-                                    )}
-                                </TransactionList>
+                                <TransactionList type={null}/>
                             </div>  
-                            <div id="home" className="container tab-pane ">
-                              
+                            <div id="home" className="container tab-pane fade">
+                            <TransactionList type={'pending'}/>
                             </div>
                             <div id="menu1" className="container tab-pane fade">
-                                <br />
-                                {/* {showProgress()} */}
+                            <TransactionList type={'inProgress'}/>
                             </div>
                             <div id="menu2" className="container tab-pane fade">
-                                <br />
-                                {/* {showCompleted()} */}
+                                <TransactionList type={'completed'}/>
                             </div>
                         </div>
                     </Box>

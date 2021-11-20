@@ -29,8 +29,8 @@ export default function ModalAddMember({ close,vehicles }) {
             uploadPhoto(images[0].data_url).then((res) => {
                 const driverId = uuidv4()
                 const db_Drivers = app.database().ref().child(`/drivers/${driverId}`)
-                const loginCode = Math.floor(Math.random() * 899999 + 100000)
-                const data = { ...formData, image: res.message,  driverId, loginCode}
+                const code = Math.floor(Math.random() * 899999 + 100000)
+                const data = { ...formData, image: res.message,  driverId, code}
                 db_Drivers.set(data).then(() => {
                     close()
                     alert('Thêm thành công!')

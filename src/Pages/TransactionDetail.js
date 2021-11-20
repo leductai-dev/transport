@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup, Tooltip } from 'react-leaflet'
 import L from 'leaflet'
 import { useHistory, useParams } from 'react-router'
 import convertDate from '../Utils/ConvertDate'
+import DriverItem from '../Components/DriversItem'
 
 const DestinationIcon = new L.Icon({
     iconUrl: '/png/destination.png',
@@ -24,28 +25,34 @@ export default function TransactionDetail() {
     const param = useParams()
     const [transaction, setTransaction] = useState(null)
     const [customer, setCustomer] = useState(null)
+    const [drivers, setDrivers] = useState(null)
 
     useEffect(() => {
         if (param.id) {
             const transaction_db = app
                 .database()
                 .ref()
-                .child(`/system/transactions/pending/${param.id}`)
+                .child(`/transactions/${param.id}`)
+            const drivers = app.database().ref().child('/drivers')
+
             transaction_db.once('value', (snap) => {
                 if (snap.val()) {
-                    console.log('1 done')
-                    // setTransaction(snap.val())
                     const customer_db = app
                         .database()
                         .ref()
-                        .child(`/Customers/${snap.val().customerId}`)
+                        .child(`/customers/${snap.val().customerId}`)
                     customer_db.once('value', (_snap) => {
-                        console.log(snap.val())
                         setCustomer(_snap.val())
                         setTransaction(snap.val())
                     })
                 } else {
                     alert('Không tìm thấy giao dịch!')
+                    return
+                }
+            })
+            drivers.once('value',(snap)=>{
+                if(snap.val()){
+                    setDrivers(Object.values(snap.val()))
                 }
             })
         }
@@ -189,7 +196,7 @@ export default function TransactionDetail() {
                                                 transform: 'translateY(-50%)',
                                                 width: '100%',
                                                 height: '1px',
-                                                backgroundColor: 'gray',
+                                                backgroundColor: '#000000',
                                                 zIndex: -1,
                                                 content: "''",
                                             },
@@ -203,7 +210,7 @@ export default function TransactionDetail() {
                                                     paddingTop: '20px',
                                                 }}
                                             >
-                                                <Box  sx={{ width: '50%', paddingRight: '20px' }}>
+                                                <Box sx={{ width: '50%', paddingRight: '20px' }}>
                                                     <Text
                                                         as="p"
                                                         sx={{
@@ -222,7 +229,7 @@ export default function TransactionDetail() {
                                                         as="p"
                                                         sx={{
                                                             fontSize: '16px',
-                                                            color: 'gray',
+                                                            color: '#000000',
                                                             marginBottom: '10px',
                                                         }}
                                                     >
@@ -232,7 +239,7 @@ export default function TransactionDetail() {
                                                         as="p"
                                                         sx={{
                                                             fontSize: '16px',
-                                                            color: 'gray',
+                                                            color: '#000000',
                                                             marginBottom: '10px',
                                                         }}
                                                     >
@@ -242,7 +249,7 @@ export default function TransactionDetail() {
                                                         as="p"
                                                         sx={{
                                                             fontSize: '16px',
-                                                            color: 'gray',
+                                                            color: '#000000',
                                                             marginBottom: '10px',
                                                         }}
                                                     >
@@ -268,7 +275,7 @@ export default function TransactionDetail() {
                                                         as="p"
                                                         sx={{
                                                             fontSize: '16px',
-                                                            color: 'gray',
+                                                            color: '#000000',
                                                             marginBottom: '10px',
                                                         }}
                                                     >
@@ -278,7 +285,7 @@ export default function TransactionDetail() {
                                                         as="p"
                                                         sx={{
                                                             fontSize: '16px',
-                                                            color: 'gray',
+                                                            color: '#000000',
                                                             marginBottom: '10px',
                                                         }}
                                                     >
@@ -288,7 +295,7 @@ export default function TransactionDetail() {
                                                         as="p"
                                                         sx={{
                                                             fontSize: '16px',
-                                                            color: 'gray',
+                                                            color: '#000000',
                                                             marginBottom: '10px',
                                                         }}
                                                     >
@@ -314,7 +321,7 @@ export default function TransactionDetail() {
                                                         as="p"
                                                         sx={{
                                                             fontSize: '16px',
-                                                            color: 'gray',
+                                                            color: '#000000',
                                                             marginBottom: '10px',
                                                         }}
                                                     >
@@ -326,7 +333,7 @@ export default function TransactionDetail() {
                                                             as="p"
                                                             sx={{
                                                                 fontSize: '16px',
-                                                                color: 'gray',
+                                                                color: '#000000',
                                                                 marginBottom: '10px',
                                                                 width: '30%',
                                                             }}
@@ -338,7 +345,7 @@ export default function TransactionDetail() {
                                                             sx={{
                                                                 width: '40%',
                                                                 fontSize: '16px',
-                                                                color: 'gray',
+                                                                color: '#000000',
                                                                 marginBottom: '10px',
                                                             }}
                                                         >
@@ -351,7 +358,7 @@ export default function TransactionDetail() {
                                                             as="p"
                                                             sx={{
                                                                 fontSize: '16px',
-                                                                color: 'gray',
+                                                                color: '#000000',
                                                                 marginBottom: '10px',
                                                                 width: '30%',
                                                             }}
@@ -362,7 +369,7 @@ export default function TransactionDetail() {
                                                             as="p"
                                                             sx={{
                                                                 fontSize: '16px',
-                                                                color: 'gray',
+                                                                color: '#000000',
                                                                 marginBottom: '10px',
                                                                 width: '40%',
                                                             }}
@@ -375,7 +382,7 @@ export default function TransactionDetail() {
                                                         as="p"
                                                         sx={{
                                                             fontSize: '16px',
-                                                            color: 'gray',
+                                                            color: '#000000',
                                                             marginBottom: '10px',
                                                         }}
                                                     >
@@ -403,7 +410,7 @@ export default function TransactionDetail() {
                                                 transform: 'translateY(-50%)',
                                                 width: '100%',
                                                 height: '1px',
-                                                backgroundColor: 'gray',
+                                                backgroundColor: '#000000',
                                                 zIndex: -1,
                                                 content: "''",
                                             },
@@ -538,7 +545,7 @@ export default function TransactionDetail() {
                                         <Box
                                             sx={{
                                                 display: 'flex',
-                                                borderBottom: '1px solid gray',
+                                                borderBottom: '1px solid #000000',
                                                 paddingBottom: '10px',
                                             }}
                                         >
@@ -584,7 +591,7 @@ export default function TransactionDetail() {
                                                         color: '#476282',
                                                     }}
                                                 >
-                                                    Ngày khởi tạo
+                                                    STT
                                                 </Box>
                                                 <Box
                                                     py={'10px'}
@@ -594,7 +601,7 @@ export default function TransactionDetail() {
                                                         color: '#476282',
                                                     }}
                                                 >
-                                                    Mã vận chuyển
+                                                    Loại xe
                                                 </Box>
                                                 <Box
                                                     py={'10px'}
@@ -604,7 +611,7 @@ export default function TransactionDetail() {
                                                         color: '#476282',
                                                     }}
                                                 >
-                                                    Tên khách hàng
+                                                    Tài xế
                                                 </Box>
                                                 <Box
                                                     py={'10px'}
@@ -614,7 +621,7 @@ export default function TransactionDetail() {
                                                         color: '#476282',
                                                     }}
                                                 >
-                                                    Số điện thoại
+                                                    Trọng tải(Kg)
                                                 </Box>
                                                 <Box
                                                     py={'10px'}
@@ -624,7 +631,7 @@ export default function TransactionDetail() {
                                                         color: '#476282',
                                                     }}
                                                 >
-                                                    Trạng thái
+                                                    Thùng chứa(m3)
                                                 </Box>
                                                 <Box
                                                     py={'10px'}
@@ -637,74 +644,9 @@ export default function TransactionDetail() {
                                                     Thao tác
                                                 </Box>
                                             </Box>
-                                            <Box
-                                                sx={{
-                                                    display: 'table-row',
-                                                    borderBottom: '1px solid #9391915c',
-                                                    marginBottom: '10px',
-                                                }}
-                                            >
-                                                <Box
-                                                    py={'5px'}
-                                                    sx={{
-                                                        display: 'table-cell',
-                                                        color: '#476282',
-                                                    }}
-                                                >
-                                                    15-12-2021
-                                                </Box>
-                                                <Box
-                                                    py={'5px'}
-                                                    sx={{
-                                                        display: 'table-cell',
-                                                        color: '#476282',
-                                                    }}
-                                                >
-                                                    TP-202-150
-                                                </Box>
-                                                <Box
-                                                    py={'5px'}
-                                                    sx={{
-                                                        display: 'table-cell',
-                                                        color: '#476282',
-                                                    }}
-                                                >
-                                                    Lê Đức Tài
-                                                </Box>
-                                                <Box
-                                                    py={'5px'}
-                                                    sx={{
-                                                        display: 'table-cell',
-                                                        color: '#476282',
-                                                    }}
-                                                >
-                                                    0926772712
-                                                </Box>
-                                                <Box
-                                                    py={'5px'}
-                                                    sx={{
-                                                        display: 'table-cell',
-                                                        color: '#476282',
-                                                    }}
-                                                >
-                                                    Pending
-                                                </Box>
-                                                <Box
-                                                    py={'5px'}
-                                                    sx={{
-                                                        display: 'table-cell',
-                                                        color: '#476282',
-                                                    }}
-                                                >
-                                                    <Button
-                                                        sx={{
-                                                            background: 'cornflowerblue',
-                                                        }}
-                                                    >
-                                                        Chi tiết
-                                                    </Button>
-                                                </Box>
-                                            </Box>
+                                            {drivers && drivers.map((driver,index)=><DriverItem driver={driver} key={index} index={index + 1} />)}
+                                            
+                                            
                                         </Box>
                                     </Box>
                                     <Text

@@ -13,6 +13,7 @@
     "axios": "^0.24.0",
     "esri-leaflet": "^3.0.3",
     "esri-leaflet-geocoder": "^3.1.1",
+    "expo-server-sdk": "^3.6.0",
     "firebase": "^8.1.2",
     "formik": "^2.2.9",
     "history": "^5.0.0",
