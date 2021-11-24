@@ -5,20 +5,22 @@ import Modal from './ModalAddVehicle'
 import { useHistory } from 'react-router-dom'
 
 export default function VehicleItem({data}) {
+    
     const [modal, setModal] = useState(false)
+    const [modalData, setModalData] = useState(null)
+
     const [user, setUser] = useState({})
     const history = useHistory()
     const { image,name,vehicleId, weight, height,length,width, payload, using, totalCount } = data
     console.log(data)
-    useEffect(() => {
-        // console.log(customerId)
-        // const customer_db = app.database().ref().child(`/Customers/${customerId}`)
-        // customer_db.once('value', (snap) => {
-        //     if (snap.val()) {
-        //         setUser(snap.val())
-        //     }
-        // })
-    }, [])
+   
+    const handleRemove = ()=>{
+        const db_Vehicle = app.database().ref().child(`/vehicles/${data.vehicleId}`)
+        if(window.confirm("Xác nhận xóa?")){
+            db_Vehicle.remove()
+        }
+    }
+
     return (
         <>
             <Box
@@ -118,7 +120,8 @@ export default function VehicleItem({data}) {
                         mr={2}
                         sx={{ background: 'linear-gradient(to left, #005bea 0%, #00c6fb 100%)' }}
                         onClick={() => {
-                            // history.push(`/transaction/${transactionId}`)
+                            setModalData(data)
+                            setModal(true)
                         }}
                     >
                         Sửa
@@ -126,14 +129,14 @@ export default function VehicleItem({data}) {
                     <Button
                         sx={{ background: 'linear-gradient(to left, #005bea 0%, #00c6fb 100%)' }}
                         onClick={() => {
-                            // history.push(`/transaction/${transactionId}`)
+                           handleRemove()
                         }}
                     >
                         Xóa
                     </Button>
                 </Box>
             </Box>
-            {modal && <Modal />}
+            {modal && <Modal close={()=>{setModal(false) ; setModalData(null)}} data={modalData}/>}
         </>
     )
 }

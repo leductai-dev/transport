@@ -26,6 +26,10 @@ export default function TransactionDetail() {
     const [transaction, setTransaction] = useState(null)
     const [customer, setCustomer] = useState(null)
     const [drivers, setDrivers] = useState(null)
+    const [chosenDriver, setChosenDriver] = useState(null)
+    const [chosenVehicle, setChosenVehicle] = useState(null)
+    
+
 
     useEffect(() => {
         if (param.id) {
@@ -57,13 +61,55 @@ export default function TransactionDetail() {
             })
         }
     }, [])
+
+    const handleChosenDriver = (driver,vehicle) =>{
+        setChosenDriver(driver)
+        setChosenVehicle(vehicle)
+    }
+
+    const handleCompleteOrder = () =>{
+        if(!chosenDriver){
+            alert("Chọn một xe để thực hiện giao hàng!")
+            return
+        }
+        const transaction_db = app
+        .database()
+        .ref()
+        .child(`/transactions/${transaction.transactionId}`)
+        const data = {...transaction, driverId: chosenDriver.driverId}
+        transaction_db.update(data)
+       
+            const EXPO_SERVER_URL = 'https://exp.host/--/api/v2/push/send'
+            console.log('dsdqqqs11d')
+    
+            const PUSH_ENDPOINT = 'https://exp.host/--/api/v2/push/send'
+            let data2 = {
+                to: chosenDriver.tokenId,
+                title: 'Yêu cầu vận chuyển hàng mới',
+                body: '',
+                sound: 'default',
+                priority: 'high',
+            }
+    
+            fetch(PUSH_ENDPOINT, {
+                mode: 'no-cors',
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data2),
+            }).catch((err) => console.log(err))
+        alert("Xử lý yêu cầu thành công!")
+    }
+
     if (customer && transaction) {
         const { initialTime, note, shippingInfo, transportCode } = transaction
         const { height, weight, width, length, imageUrl, productName } = shippingInfo.productInfo
         const { receiver, sender } = shippingInfo
         const { customerId, email, joinDate, name, phone } = customer
-        console.log(receiver)
-        console.log(sender)
+        // console.log(receiver)
+        // console.log(sender)
         return (
             <div className="flex-grow-1 map">
                 <Box
@@ -137,18 +183,13 @@ export default function TransactionDetail() {
                                             sx={{
                                                 fontWeight: 'bold',
                                                 fontSize: '30px',
-                                            }}
-                                        >
-                                            {customer.name}
-                                        </Text>
-                                        <Text
-                                            sx={{
                                                 borderBottom: '1px solid #80808030',
                                                 pb: '8px',
                                             }}
                                         >
-                                            Customer
+                                            {customer.name}
                                         </Text>
+                                     
                                         <Box
                                             sx={{
                                                 pt: '10px',
@@ -196,7 +237,8 @@ export default function TransactionDetail() {
                                                 transform: 'translateY(-50%)',
                                                 width: '100%',
                                                 height: '1px',
-                                                backgroundColor: '#000000',
+                                                backgroundColor: '#363636',
+                                                fontWeight: '500',
                                                 zIndex: -1,
                                                 content: "''",
                                             },
@@ -229,7 +271,8 @@ export default function TransactionDetail() {
                                                         as="p"
                                                         sx={{
                                                             fontSize: '16px',
-                                                            color: '#000000',
+                                                            color: '#363636',
+                                                            fontWeight: '500',
                                                             marginBottom: '10px',
                                                         }}
                                                     >
@@ -239,7 +282,8 @@ export default function TransactionDetail() {
                                                         as="p"
                                                         sx={{
                                                             fontSize: '16px',
-                                                            color: '#000000',
+                                                            color: '#363636',
+                                                            fontWeight: '500',
                                                             marginBottom: '10px',
                                                         }}
                                                     >
@@ -249,7 +293,8 @@ export default function TransactionDetail() {
                                                         as="p"
                                                         sx={{
                                                             fontSize: '16px',
-                                                            color: '#000000',
+                                                            color: '#363636',
+                                                            fontWeight: '500',
                                                             marginBottom: '10px',
                                                         }}
                                                     >
@@ -275,7 +320,8 @@ export default function TransactionDetail() {
                                                         as="p"
                                                         sx={{
                                                             fontSize: '16px',
-                                                            color: '#000000',
+                                                            color: '#363636',
+                                                            fontWeight: '500',
                                                             marginBottom: '10px',
                                                         }}
                                                     >
@@ -285,7 +331,8 @@ export default function TransactionDetail() {
                                                         as="p"
                                                         sx={{
                                                             fontSize: '16px',
-                                                            color: '#000000',
+                                                            color: '#363636',
+                                                            fontWeight: '500',
                                                             marginBottom: '10px',
                                                         }}
                                                     >
@@ -295,7 +342,8 @@ export default function TransactionDetail() {
                                                         as="p"
                                                         sx={{
                                                             fontSize: '16px',
-                                                            color: '#000000',
+                                                            color: '#363636',
+                                                            fontWeight: '500',
                                                             marginBottom: '10px',
                                                         }}
                                                     >
@@ -321,7 +369,8 @@ export default function TransactionDetail() {
                                                         as="p"
                                                         sx={{
                                                             fontSize: '16px',
-                                                            color: '#000000',
+                                                            color: '#363636',
+                                                            fontWeight: '500',
                                                             marginBottom: '10px',
                                                         }}
                                                     >
@@ -333,7 +382,8 @@ export default function TransactionDetail() {
                                                             as="p"
                                                             sx={{
                                                                 fontSize: '16px',
-                                                                color: '#000000',
+                                                                color: '#363636',
+                                                                fontWeight: '500',
                                                                 marginBottom: '10px',
                                                                 width: '30%',
                                                             }}
@@ -345,7 +395,8 @@ export default function TransactionDetail() {
                                                             sx={{
                                                                 width: '40%',
                                                                 fontSize: '16px',
-                                                                color: '#000000',
+                                                                color: '#363636',
+                                                                fontWeight: '500',
                                                                 marginBottom: '10px',
                                                             }}
                                                         >
@@ -358,7 +409,8 @@ export default function TransactionDetail() {
                                                             as="p"
                                                             sx={{
                                                                 fontSize: '16px',
-                                                                color: '#000000',
+                                                                color: '#363636',
+                                                                fontWeight: '500',
                                                                 marginBottom: '10px',
                                                                 width: '30%',
                                                             }}
@@ -369,7 +421,8 @@ export default function TransactionDetail() {
                                                             as="p"
                                                             sx={{
                                                                 fontSize: '16px',
-                                                                color: '#000000',
+                                                                color: '#363636',
+                                                                fontWeight: '500',
                                                                 marginBottom: '10px',
                                                                 width: '40%',
                                                             }}
@@ -382,7 +435,8 @@ export default function TransactionDetail() {
                                                         as="p"
                                                         sx={{
                                                             fontSize: '16px',
-                                                            color: '#000000',
+                                                            color: '#363636',
+                                                            fontWeight: '500',
                                                             marginBottom: '10px',
                                                         }}
                                                     >
@@ -410,7 +464,8 @@ export default function TransactionDetail() {
                                                 transform: 'translateY(-50%)',
                                                 width: '100%',
                                                 height: '1px',
-                                                backgroundColor: '#000000',
+                                                backgroundColor: '#363636',
+                                                fontWeight: '500',
                                                 zIndex: -1,
                                                 content: "''",
                                             },
@@ -442,7 +497,7 @@ export default function TransactionDetail() {
                                             overflowX: 'scroll',
                                         }}
                                     >
-                                        {imageUrl.split(',').map((url, index) => (
+                                        {imageUrl.length > 0 && imageUrl.split(',').map((url, index) => (
                                             <Box
                                                 key={index}
                                                 sx={{
@@ -464,7 +519,7 @@ export default function TransactionDetail() {
                                     </Box>
                                     <Text
                                         as="p"
-                                        mt={'20px'}
+                                        mt={'50px'}
                                         sx={{
                                             zIndex: 1,
                                             width: 'fit-content',
@@ -536,8 +591,9 @@ export default function TransactionDetail() {
                                             pr: '10px',
                                             fontSize: '20px',
                                             fontWeight: 'bold',
-                                            marginTop: '20px',
+                                            marginTop: '50px',
                                         }}
+                                        mb={3}
                                     >
                                         Danh sách xe gợi ý
                                     </Text>
@@ -545,7 +601,8 @@ export default function TransactionDetail() {
                                         <Box
                                             sx={{
                                                 display: 'flex',
-                                                borderBottom: '1px solid #000000',
+                                                borderBottom: '1px solid #363636',
+                                                fontWeight: '500',
                                                 paddingBottom: '10px',
                                             }}
                                         >
@@ -588,7 +645,8 @@ export default function TransactionDetail() {
                                                     sx={{
                                                         display: 'table-cell',
                                                         fontWeight: '600',
-                                                        color: '#476282',
+                                                        color: '#1b3a57',
+                                                        textAlign: 'center'
                                                     }}
                                                 >
                                                     STT
@@ -598,7 +656,8 @@ export default function TransactionDetail() {
                                                     sx={{
                                                         display: 'table-cell',
                                                         fontWeight: '600',
-                                                        color: '#476282',
+                                                        color: '#1b3a57',
+                                                        textAlign: 'center'
                                                     }}
                                                 >
                                                     Loại xe
@@ -608,7 +667,8 @@ export default function TransactionDetail() {
                                                     sx={{
                                                         display: 'table-cell',
                                                         fontWeight: '600',
-                                                        color: '#476282',
+                                                        color: '#1b3a57',
+                                                        textAlign: 'center'
                                                     }}
                                                 >
                                                     Tài xế
@@ -618,7 +678,8 @@ export default function TransactionDetail() {
                                                     sx={{
                                                         display: 'table-cell',
                                                         fontWeight: '600',
-                                                        color: '#476282',
+                                                        color: '#1b3a57',
+                                                        textAlign: 'center'
                                                     }}
                                                 >
                                                     Trọng tải(Kg)
@@ -628,7 +689,8 @@ export default function TransactionDetail() {
                                                     sx={{
                                                         display: 'table-cell',
                                                         fontWeight: '600',
-                                                        color: '#476282',
+                                                        color: '#1b3a57',
+                                                        textAlign: 'center'
                                                     }}
                                                 >
                                                     Thùng chứa(m3)
@@ -638,13 +700,14 @@ export default function TransactionDetail() {
                                                     sx={{
                                                         display: 'table-cell',
                                                         fontWeight: '600',
-                                                        color: '#476282',
+                                                        color: '#1b3a57',
+                                                        textAlign: 'center'
                                                     }}
                                                 >
-                                                    Thao tác
+                                                   Hành động
                                                 </Box>
                                             </Box>
-                                            {drivers && drivers.map((driver,index)=><DriverItem driver={driver} key={index} index={index + 1} />)}
+                                            {drivers && drivers.map((driver,index)=><DriverItem driver={driver} handle={handleChosenDriver} key={index} index={index + 1} />)}
                                             
                                             
                                         </Box>
@@ -653,18 +716,64 @@ export default function TransactionDetail() {
                                         as="p"
                                         sx={{
                                             zIndex: 1,
-                                            width: 'fit-content',
                                             color: '#1b3a57',
                                             pr: '10px',
                                             fontSize: '20px',
                                             fontWeight: 'bold',
-                                            marginTop: '20px',
+                                            marginTop: '50px',
+                                            paddingBottom: '10px',
+                                            borderBottom: '1px solid gray',
+                                            display: 'block',
+                                            width: 'revert',
                                         }}
                                     >
                                         Hành động
                                     </Text>
-                                    <Box>
-                                        <Button>Hủy yêu cầu</Button>
+                                    <Box sx={{display: 'flex', justifyContent:'flex-start', marginTop: '10px', paddingBottom: '200px'}}>
+                                    {chosenDriver && <Text
+                                        as="span"
+                                        sx={{
+                                            zIndex: 1,
+                                            color: '#1b3a57',
+                                            pr: '10px',
+                                            fontSize: '15px',
+                                            marginTop: '10px',
+                                            justifySelf: 'flex-start',
+                                            marginRight: 'auto'
+                                        }}
+                                    >
+                                        *Gửi yêu cầu vận chuyển cho <Text
+                                        as="span"
+                                        sx={{
+                                            zIndex: 1,
+                                            color: '#1b3a57',
+                                            pr: '10px',
+                                            fontSize: '15px',
+                                            marginTop: '10px',
+                                            justifySelf: 'flex-start',
+                                            marginRight: 'auto',
+                                            fontWeight: '600'
+                                        }}
+                                    >
+                                        {chosenVehicle.name}</Text>do tài xế <Text
+                                        as="span"
+                                        sx={{
+                                            zIndex: 1,
+                                            color: '#1b3a57',
+                                            pr: '10px',
+                                            fontSize: '15px',
+                                            marginTop: '10px',
+                                            justifySelf: 'flex-start',
+                                            marginRight: 'auto',
+                                            fontWeight: '600'
+
+                                        }}
+                                    >
+                                        {chosenDriver.name}
+                                    </Text>điều khiển.
+                                    </Text>}
+                                        <Button className='bg-warning ml-auto' mr={2} sx={{background: 'blue',padding: '10px 20px'}} ><i class="fa fa-minus-circle" aria-hidden="true"></i> Hủy yêu cầu</Button>
+                                        <Button  onClick={()=>{handleCompleteOrder()}} className='bg-success' sx={{background: 'blue',padding: '10px 35px'}} ><i class="fa fa-check" aria-hidden="true"></i> Hoàn tất</Button>
                                     </Box>
                                 </Box>
                             </Box>

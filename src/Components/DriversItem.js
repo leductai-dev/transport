@@ -5,7 +5,7 @@ import ModalTransaction from './ModalTransactionInfo'
 import { useHistory } from 'react-router-dom'
 import ModalDriverDetail from './ModalDriverDetail'
 
-export default function DriverItem({driver, index}) {
+export default function DriverItem({driver, index, handle}) {
     const [dataModal, setDataModal] = useState(null);
     const [vehicle, setVehicle] = useState(null);
 
@@ -31,6 +31,7 @@ export default function DriverItem({driver, index}) {
                     py={'5px'}
                     sx={{
                         display: 'table-cell',
+                        textAlign: 'center',
                         color: '#476282',
                     }}
                 >
@@ -40,6 +41,7 @@ export default function DriverItem({driver, index}) {
                     py={'5px'}
                     sx={{
                         display: 'table-cell',
+                        textAlign: 'center',
                         color: '#476282',
                     }}
                 >
@@ -49,6 +51,7 @@ export default function DriverItem({driver, index}) {
                     py={'5px'}
                     sx={{
                         display: 'table-cell',
+                        textAlign: 'center',
                         color: '#476282',
                     }}
                 >
@@ -58,6 +61,7 @@ export default function DriverItem({driver, index}) {
                     py={'5px'}
                     sx={{
                         display: 'table-cell',
+                        textAlign: 'center',
                         color: '#476282',
                     }}
                 >
@@ -67,6 +71,7 @@ export default function DriverItem({driver, index}) {
                     py={'5px'}
                     sx={{
                         display: 'table-cell',
+                        textAlign: 'center',
                         color: '#476282',
                     }}
                 >
@@ -76,10 +81,12 @@ export default function DriverItem({driver, index}) {
                     py={'5px'}
                     sx={{
                         display: 'table-cell',
+                        textAlign: 'center',
                         color: '#476282',
                     }}
                 >
                     <Button
+                    className='bg-primary'
                         sx={{
                             background: 'cornflowerblue',
                         }}
@@ -87,7 +94,18 @@ export default function DriverItem({driver, index}) {
                             setDataModal(driver)
                         }}
                     >
-                        Chi tiết
+                        <i class="fa fa-eye" aria-hidden="true"></i> Lịch trình
+                    </Button>
+                    <Button
+                    className='bg-primary ml-2'
+                        sx={{
+                            background: 'cornflowerblue',
+                        }}
+                        onClick={() => {
+                            handle(driver,vehicle)
+                        }}
+                    >
+                        <i class="fa fa-thumb-tack" aria-hidden="true"></i> Chọn
                     </Button>
                 </Box>
             </Box>

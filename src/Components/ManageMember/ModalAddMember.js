@@ -155,6 +155,7 @@ export default function ModalAddMember({ close,vehicles }) {
                                             border: 'none',
                                             overflow: 'hidden',
                                             borderStyle: 'outset',
+                                            marginTop: '20px'
                                         }}
                                         onClick={(e) => {
                                             e.preventDefault()
@@ -172,7 +173,7 @@ export default function ModalAddMember({ close,vehicles }) {
                                                     transform: 'scale(1.2)',
                                                 },
                                             }}
-                                            src="/images/upload-placeholder.jpg"
+                                            src="/png/upload-placeholder.jpg"
                                         ></Image>
                                     </Button>
                                 )}

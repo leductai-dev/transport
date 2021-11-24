@@ -6,13 +6,16 @@
     padding: 20px;
   }
   .page-link {
+    padding: 0;
     margin: 10px 12px;
     cursor: pointer;
-    width: 42px;
+    width: 30px;
+    height: 35px;
+    line-height: 36px;
+    text-align: center;
     border-radius: 3px;
     overflow: hidden;
     display: block;
-    line-height: 30px;
     color: rgb(156 154 154);
     font-size: 19px;
     -webkit-user-select: none;
@@ -20,6 +23,7 @@
   }
   .prev-next-link {
     font-size: 25px;
+    line-height: 30px;
   }
   .page-link:hover {
     color: black;
@@ -27,7 +31,7 @@
   
   .page-item.active > .page-link {
     color: white;
-    background: #fb4500d9;
+    background: #0b1361d9;
   }
   @media only screen and (max-width: 1023px) {
     .page-link {

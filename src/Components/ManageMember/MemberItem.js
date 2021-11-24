@@ -61,7 +61,7 @@ export default function VehicleItem({ data }) {
                         color: '#476282',
                     }}
                 >
-                    {phone}
+                    0{phone}
                 </Box>
                 <Box
                     py={'5px'}

@@ -3,6 +3,7 @@ import { app } from '../firebaseConfig'
 import { Box, Text, Image, Button } from 'rebass'
 import ModalTransaction from './ModalTransactionInfo'
 import { useHistory } from 'react-router-dom'
+import convertDate from '../Utils/ConvertDate'
 
 export default function TransactionItem({ data }) {
     const [showTransactionInfo, setShowTransactionInfo] = useState(false)
@@ -30,7 +31,7 @@ export default function TransactionItem({ data }) {
                     py={'5px'}
                     sx={{ display: 'table-cell', textAlign: 'center', color: '#476282' }}
                 >
-                   {initialTime}
+                   {convertDate(initialTime)}
                 </Box>
                 <Box
                     py={'5px'}

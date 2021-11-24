@@ -6,45 +6,78 @@ import { app } from '../../firebaseConfig'
 import { v4 as uuidv4 } from 'uuid'
 import uploadPhoto from '../../Utils/UploadImg'
 
-export default function ModalAddMember({ close }) {
-    const id = uuidv4()
+export default function ModalAddMember({ close, data }) {
     const [images, setImages] = React.useState([])
     const [formData, setFormData] = React.useState({
-        name: '',
-        totalCount: '',
+        name: data?.name || '',
+        totalCount: data?.totalCount || '',
         using: 0,
-        image: '',
-        length: '',
-        width: '',
-        height: '',
-        payload: '',
+        image: data?.image || '',
+        length: data?.length || '',
+        width: data?.width || '',
+        height: data?.height || '',
+        payload: data?.payload || '',
     })
-
+    console.log('formData')
+    console.log(formData)
 
     const handleSubmit = () => {
         const { name, totalCount, length, width, height, payload } = formData
         console.log(formData)
-        if (!name || !totalCount || images.length ===0 || !length || !width || !height || !payload) {
-            alert("Vui lòng nhập đầy đủ thông tin!")
-            return
-        }
-        try{
+
+        try {
+            if (data) {
+                console.log("if data")
+                if (!name || !totalCount || !length || !width || !height || !payload) {
+                    alert('Vui lòng nhập đầy đủ thông tin!')
+                    return
+                }
+                const db_Vehicle = app.database().ref().child(`/vehicles/${data.vehicleId}`)
+                if (images[0]) {
+                    uploadPhoto(images[0].data_url).then((res) => {
+                        const _data = { ...data, ...formData, image: res.message }
+                        db_Vehicle.update(_data).then(() => {
+                            close()
+                            alert('Cập nhật thành công!')
+                        })
+                    })
+                    return
+                }
+                console.log("if data2")
+                const _data = { ...data, ...formData }
+                db_Vehicle.update(_data).then(() => {
+                    close()
+                    alert('Cập nhật thành công!')
+                })
+                return
+            }
+            if (
+                !name ||
+                !totalCount ||
+                images.length === 0 ||
+                !length ||
+                !width ||
+                !height ||
+                !payload
+            ) {
+                alert('Vui lòng nhập đầy đủ thông tin!')
+                return
+            }
+            console.log('dsdsd')
             uploadPhoto(images[0].data_url).then((res) => {
                 const vehicleId = uuidv4()
-                const db_Vehicle = app
-                .database()
-                .ref()
-                .child(`/vehicles/${vehicleId}`);
+                const db_Vehicle = app.database().ref().child(`/vehicles/${vehicleId}`)
                 const data = { ...formData, image: res.message, vehicleId }
-                db_Vehicle.set(data).then(()=>{
+                db_Vehicle.set(data).then(() => {
                     close()
-                    alert("Thêm thành công!")
-                });
+                    alert('Thêm thành công!')
                 })
-        }catch(err){
-            alert("Có lỗi xảy ra vui lòng thử lại!")
+            })
+        } catch (err) {
+            alert(err)
+            alert('Có lỗi xảy ra vui lòng thử lại!')
         }
-        
+        console.log("dddddddddddd")
     }
 
     const handleChange = (e) => {
@@ -64,7 +97,6 @@ export default function ModalAddMember({ close }) {
                 borderRadius: '10px',
                 padding: '5px',
                 zIndex: 10,
-
             }}
         >
             <Box
@@ -119,11 +151,10 @@ export default function ModalAddMember({ close }) {
                                     <Box
                                         sx={{
                                             position: 'relative',
-                                            marginRight: '15px',
-                                            marginBottom: '15px',
                                             border: '1px solid #b3abab',
                                             width: '80px',
                                             height: '90px',
+                                            marginTop: '20px',
                                         }}
                                     >
                                         <Image
@@ -161,6 +192,8 @@ export default function ModalAddMember({ close }) {
                                             border: 'none',
                                             overflow: 'hidden',
                                             borderStyle: 'outset',
+                                            marginTop: '20px',
+                                            padding: 0,
                                         }}
                                         onClick={(e) => {
                                             e.preventDefault()
@@ -178,7 +211,7 @@ export default function ModalAddMember({ close }) {
                                                     transform: 'scale(1.2)',
                                                 },
                                             }}
-                                            src="/images/upload-placeholder.jpg"
+                                            src={formData.image || '/png/upload-placeholder.jpg'}
                                         ></Image>
                                     </Button>
                                 )}
@@ -195,6 +228,8 @@ export default function ModalAddMember({ close }) {
                                     border: '1px solid #e3e3e3',
                                     background: '#cdcdcd14',
                                 }}
+                                defaultValue={formData.name}
+                                // defaultValue="sdsd"
                                 name="name"
                                 onChange={handleChange}
                                 type="text"
@@ -209,6 +244,7 @@ export default function ModalAddMember({ close }) {
                                     border: '1px solid #e3e3e3',
                                     background: '#cdcdcd14',
                                 }}
+                                defaultValue={formData.totalCount}
                                 name="totalCount"
                                 type="number"
                                 onChange={handleChange}
@@ -239,6 +275,7 @@ export default function ModalAddMember({ close }) {
                                     border: '1px solid #e3e3e3',
                                     background: '#cdcdcd14',
                                 }}
+                                defaultValue={formData.length}
                                 name="length"
                                 type="number"
                                 onChange={handleChange}
@@ -253,6 +290,7 @@ export default function ModalAddMember({ close }) {
                                     border: '1px solid #e3e3e3',
                                     background: '#cdcdcd14',
                                 }}
+                                defaultValue={formData.width}
                                 name="width"
                                 type="number"
                                 onChange={handleChange}
@@ -271,6 +309,7 @@ export default function ModalAddMember({ close }) {
                                     border: '1px solid #e3e3e3',
                                     background: '#cdcdcd14',
                                 }}
+                                defaultValue={formData.height}
                                 name="height"
                                 type="number"
                                 onChange={handleChange}
@@ -285,6 +324,7 @@ export default function ModalAddMember({ close }) {
                                     border: '1px solid #e3e3e3',
                                     background: '#cdcdcd14',
                                 }}
+                                defaultValue={formData.payload}
                                 name="payload"
                                 type="number"
                                 onChange={handleChange}
@@ -306,7 +346,7 @@ export default function ModalAddMember({ close }) {
                             handleSubmit()
                         }}
                     >
-                        Thêm
+                        {data ? "Cập nhật" : "Thêm"}
                     </Button>
                 </Box>
             </Box>
