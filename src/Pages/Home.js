@@ -12,7 +12,7 @@ import L from "leaflet";
 import { app } from "../firebaseConfig";
 import { Button, Text, Box, Image } from "rebass";
 import { MenuOption } from "../Components/MenuOptions";
-import ModalTransaction from "../Components/ModalTransactionInfo";
+import ModalTransaction from "../Components/ManageTransaction/ModalTransactionInfo";
 
 const DestinationIcon = new L.Icon({
     iconUrl: "./png/destination.png",

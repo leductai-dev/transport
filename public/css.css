@@ -19,18 +19,18 @@ html{
 }
 .bg_main{
     background-image: linear-gradient(to top, #005bea 0%, #00c6fb 82%, #005bea 100%);
-
 }
 
 .customize-layout-left{
-    flex: 0 0 18.666667%;
-    max-width: 18.666667%;
+    /* flex: 0 0 18.666667%; */
+    /* max-width: 18.666667%; */
     height: 100vh;
-    max-height: 100vh;
     padding: 0;
     position: relative;
     box-shadow: 2px 0px 5px 0px #08050575;
     z-index: 0;
+    background-image: linear-gradient(to top, #005bea 0%, #00c6fb 85%, #005bea 100%);
+
 }
 
 .map{
@@ -44,13 +44,12 @@ html{
 
 
 .customize-layout-right{
-    flex: 0 0 81.333333%;
-    max-width: 81.333333%;
     height: 100vh;
     max-height: 100vh;
     padding: 0;
     box-shadow: #CCCCCC 6px 4px 5px -1px; 
     position: relative;
+    overflow: overlay;
 }
 
 
@@ -67,7 +66,7 @@ html{
     color: white;
     text-decoration: none;
     width: 100%;
-    padding: 15px 5px 15px 11px;    
+    padding: 13px 5px 13px 11px;    
     cursor:pointer;
 }
 .li-item:hover > a > span  {
@@ -153,17 +152,19 @@ div > ul > li.cts-li:last-child{
     color: inherit;
   
 }
-
+.menu_transaction{
+    transition: all 0.3s;
+}
 .a-item:hover{
     text-decoration: none;
     color: rgb(20, 75, 177);
 }
 .div-logo{
-    background-image: linear-gradient(to top, #00c6fb 0%, #005bea 100%);
+    /* background-image: linear-gradient(to top, #005bea 0%, #00c6fb 80%, #005bea 100%); */
     padding: 17px;
 }
 .div-item{
-    background-image: linear-gradient(to bottom, #00c6fb 0%, #005bea 100%);
+    /* background-image: linear-gradie nt(to bottom, #00c6fb 0%, #005bea 100%); */
 }
 .div-item ul > li > a > i{
     position: absolute;
@@ -219,9 +220,6 @@ input[type="checkbox"]:checked + li{
 #tex:checked~li{
     display: none;
 
-}
-.active{
-    color: rgb(13, 45, 230) ;
 }
 
 .span-text{
@@ -315,11 +313,8 @@ div .cs-row{
 
 }
 .tab-container{
-    height: 85.5vh;
-    overflow: auto;
     padding: 35px 30px 35px;
     position: relative;
-
 }
 
 .p-title{

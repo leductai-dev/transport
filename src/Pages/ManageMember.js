@@ -11,7 +11,7 @@ const ManagerTeam = () => {
     // var database = app.database().ref().child(`CenterTeam/${localStorage.getItem('centerID')}/InforTeam/`)
     const [data, setData] = useState(null)
     const [vehicles, setVehicles] = useState(null)
-    const {pagination,handlePageChange, setPagination} = usePagination()
+    const {pagination,handlePageChange, setPagination} = usePagination(10)
     const {limit,page} =pagination
     useEffect(() => {
         try {
@@ -58,7 +58,7 @@ const ManagerTeam = () => {
                     <Box sx={{ paddingTop: '20px' }}>
                         <MemberList vehicles={vehicles}>
                             {data &&
-                                data.slice((page-1)*limit,page *limit).map((value, index) => <MemberItem key={index} data={value} />)}
+                                data.slice((page-1)*limit,page *limit).map((value, index) => <MemberItem key={index} vehicles={vehicles} data={value} />)}
                         </MemberList>
                     </Box>
                 </Box>

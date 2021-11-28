@@ -4,20 +4,30 @@ import { Box, Text, Image, Button } from 'rebass'
 import Modal from './ModalAddMember'
 import { useHistory } from 'react-router-dom'
 
-export default function VehicleItem({ data }) {
+export default function VehicleItem({ data,vehicles }) {
     const [modal, setModal] = useState(false)
+    const [modalData, setModalData] = useState(null)
     const [vehicle, setVehicle] = useState(null)
     const history = useHistory()
     
     const { name, phone, sex, joinDate, birthDay, vehicleId, status, image } = data
+    const db_Vehicle = app.database().ref().child(`/vehicles/${vehicleId}`)
     useEffect(() => {
-        const db_Vehicle = app.database().ref().child(`/vehicles/${vehicleId}`)
         db_Vehicle.once('value', (snap) => {
             if (snap.val()) {
                 setVehicle(snap.val())
             }
         })
     }, [vehicleId])
+
+    const handleRemove = ()=>{
+        const db_Drivers = app.database().ref().child(`/drivers/${data.driverId}`)
+        if(window.confirm("Xác nhận xóa?")){
+            db_Drivers.remove()
+            const _data = {...vehicle, using: vehicle.using - 1 }
+            db_Vehicle.update(_data)
+        }   
+    }
     return (
         <>
             <Box
@@ -117,16 +127,28 @@ export default function VehicleItem({ data }) {
                     }}
                 >
                     <Button
-                        sx={{ background: 'linear-gradient(to left, #005bea 0%, #00c6fb 100%)' }}
+                        mr={2}
+                        sx={{  background: '#476282',
+                        color: 'white'}}
                         onClick={() => {
-                            // history.push(`/transaction/${transactionId}`)
+                            setModalData(data)
+                            setModal(true)
                         }}
                     >
-                        Chi tiết
+                        Sửa
+                    </Button>
+                    <Button
+                        sx={{  background: '#476282',
+                        color: 'white' }}
+                        onClick={() => {
+                           handleRemove()
+                        }}
+                    >
+                        Xóa
                     </Button>
                 </Box>
             </Box>
-            {modal && <Modal />}
+            {modal && <Modal vehicles={vehicles} close={()=>{setModal(false) ; setModalData(null)}} data={modalData}/>}
         </>
     )
 }

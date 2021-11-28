@@ -1,35 +1,13 @@
-import React, { useState, useEffect } from "react";
-import Menu from "./Components/menu.js";
-import routes from "./Routes";
-import Header from "./Components/header.js";
-import Request from "./Components/request";
-import LoginRegister from "./Pages/Login_Register";
-import { useDispatch, useSelector } from "react-redux";
-import Main from "./Apps2";
-import { app } from "./firebaseConfig";
-import { Get_DataUserLogin } from "./Actions/Actions";
-
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Home from "./Pages/Home";
-import { Redirect } from "react-router-dom";
+import React, { useState, useEffect } from 'react'
+import Menu from './Components/menu.js'
+import routes from './Routes'
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+import { Button, Box } from 'rebass'
+import {useDispatch,useSelector} from 'react-redux'
 
 function App() {
-    var [isLogin, setisLogin] = useState(true);
-
-    useEffect(() => {
-        let count =  0
-        const db_Transactions = app.database().ref().child(`/system/transactions/pending`)
-        db_Transactions.on("value", (snap) => {
-            if(snap.val()){
-                if(count > 0){
-                    alert("Count bang 1")
-                }else{
-                    count++
-                }
-            }
-        });
-    }, []);
-
+    var [isLogin, setisLogin] = useState(true)
+    const state = useSelector((state)=>state.expandMenu)
     // app.auth().onAuthStateChanged(function (user) {
     //     if (user) {
     //         setisLogin(true);
@@ -39,35 +17,35 @@ function App() {
     //         console.log("chưa login");
     //     }
     // });
-
+    const width = state ? '245px' : '65px'
     return (
-        <Router>
-            <div className="row h-100 bg_main ">
-                <Menu />
-                <div
-                    id="tmp_id"
-                    className="col-md-10 h-100 customize-layout-right d-flex flex-column"
-                >
-                    <Redirection />
+        <>
+            <Router>
+                <div className=" bg_main d-flex ">
+                    <Box className="menu_transaction" sx={{
+                        width,
+                        minWidth: width
+                        }}>
+                        <Menu />
+                    </Box>
+
+                    <Box className="customize-layout-right flex-grow-1">
+                        <Redirection />
+                    </Box>
                 </div>
-            </div>
-            {/* <Request></Request> */}
-        </Router>
-    );
+                {/* <Request></Request> */}
+            </Router>
+        </>
+    )
 }
 function Redirection() {
-    var result = null;
+    var result = null
     result = routes.map((route, index) => {
         return (
-            <Route
-                path={route.path}
-                component={route.page}
-                key={index}
-                exact={route.exact}
-            ></Route>
-        );
-    });
-    return <Switch>{result}</Switch>;
+            <Route path={route.path} component={route.page} key={index} exact={route.exact}></Route>
+        )
+    })
+    return <Switch>{result}</Switch>
 }
 
-export default App;
+export default App

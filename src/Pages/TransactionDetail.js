@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,useCallback } from 'react'
 import { app } from '../firebaseConfig'
 import { Box, Text, Image, Button } from 'rebass'
 import { MapContainer, TileLayer, Marker, Popup, Tooltip } from 'react-leaflet'
 import L from 'leaflet'
 import { useHistory, useParams } from 'react-router'
 import convertDate from '../Utils/ConvertDate'
-import DriverItem from '../Components/DriversItem'
+import DriverItem from '../Components/ManageTransaction/DriversItem'
+import ImageViewer from "react-simple-image-viewer";
+import { Input, Label, Select, Checkbox } from '@rebass/forms'
 
 const DestinationIcon = new L.Icon({
     iconUrl: '/png/destination.png',
@@ -20,6 +22,7 @@ const InitialIcon = new L.Icon({
     iconAnchor: [17, 46],
     popupAnchor: [0, -46],
 })
+
 export default function TransactionDetail() {
     const history = useHistory()
     const param = useParams()
@@ -28,15 +31,22 @@ export default function TransactionDetail() {
     const [drivers, setDrivers] = useState(null)
     const [chosenDriver, setChosenDriver] = useState(null)
     const [chosenVehicle, setChosenVehicle] = useState(null)
-    
+    const [currentImage, setCurrentImage] = useState(0);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
 
+  const openImageViewer = useCallback((index) => {
+    setCurrentImage(index);
+    setIsViewerOpen(true);
+  }, []);
 
+  const closeImageViewer = () => {
+    setCurrentImage(0);
+    setIsViewerOpen(false);
+  };
     useEffect(() => {
+        window.scrollTo(0, 0)
         if (param.id) {
-            const transaction_db = app
-                .database()
-                .ref()
-                .child(`/transactions/${param.id}`)
+            const transaction_db = app.database().ref().child(`/transactions/${param.id}`)
             const drivers = app.database().ref().child('/drivers')
 
             transaction_db.once('value', (snap) => {
@@ -54,53 +64,74 @@ export default function TransactionDetail() {
                     return
                 }
             })
-            drivers.once('value',(snap)=>{
-                if(snap.val()){
+            drivers.once('value', (snap) => {
+                if (snap.val()) {
                     setDrivers(Object.values(snap.val()))
                 }
             })
         }
-    }, [])
+    }, [param])
 
-    const handleChosenDriver = (driver,vehicle) =>{
+    const handleChosenDriver = (driver, vehicle) => {
         setChosenDriver(driver)
         setChosenVehicle(vehicle)
     }
-
-    const handleCompleteOrder = () =>{
-        if(!chosenDriver){
-            alert("Chọn một xe để thực hiện giao hàng!")
-            return
-        }
+    const handleCancelCustomer = () => {
+        const transaction_db = app
+            .database()
+            .ref()
+            .child(`/transactions/${transaction.transactionId}`)
+        const data = { ...transaction, status: 'canceled' }
+        transaction_db.update(data)
+        history.push('/transactions')
+        alert('Hủy thành yêu cầu chuyển hàng thành công!')
+    }
+    const handleCancelDriver = () => {
         const transaction_db = app
         .database()
         .ref()
         .child(`/transactions/${transaction.transactionId}`)
-        const data = {...transaction, driverId: chosenDriver.driverId}
+    const data = { ...transaction, driverId: transaction.driverId, status: 'pending' } // lưu ý
+    transaction_db.update(data)
+    history.push('/transactions')
+    alert('Hủy yêu cầu thành công!')
+    }
+
+    const handleCompleteOrder = () => {
+        if (!chosenDriver) {
+            alert('Chọn một xe để thực hiện giao hàng!')
+            return
+        }
+        const transaction_db = app
+            .database()
+            .ref()
+            .child(`/transactions/${transaction.transactionId}`)
+        const data = { ...transaction, driverId: chosenDriver.driverId, status: 'driverPending' } // lưu ý
         transaction_db.update(data)
-       
-            const EXPO_SERVER_URL = 'https://exp.host/--/api/v2/push/send'
-            console.log('dsdqqqs11d')
-    
-            const PUSH_ENDPOINT = 'https://exp.host/--/api/v2/push/send'
-            let data2 = {
-                to: chosenDriver.tokenId,
-                title: 'Yêu cầu vận chuyển hàng mới',
-                body: '',
-                sound: 'default',
-                priority: 'high',
-            }
-    
-            fetch(PUSH_ENDPOINT, {
-                mode: 'no-cors',
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data2),
-            }).catch((err) => console.log(err))
-        alert("Xử lý yêu cầu thành công!")
+
+        const EXPO_SERVER_URL = 'https://exp.host/--/api/v2/push/send'
+        console.log('dsdqqqs11d')
+
+        const PUSH_ENDPOINT = 'https://exp.host/--/api/v2/push/send'
+        let data2 = {
+            to: chosenDriver.tokenId,
+            title: 'Yêu cầu vận chuyển hàng mới',
+            body: '',
+            sound: 'default',
+            priority: 'high',
+        }
+
+        fetch(PUSH_ENDPOINT, {
+            mode: 'no-cors',
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data2),
+        }).catch((err) => console.log(err))
+        history.push('/transactions')
+        alert('Xử lý yêu cầu thành công!')
     }
 
     if (customer && transaction) {
@@ -108,8 +139,8 @@ export default function TransactionDetail() {
         const { height, weight, width, length, imageUrl, productName } = shippingInfo.productInfo
         const { receiver, sender } = shippingInfo
         const { customerId, email, joinDate, name, phone } = customer
-        // console.log(receiver)
-        // console.log(sender)
+        const images =imageUrl.split(',')
+
         return (
             <div className="flex-grow-1 map">
                 <Box
@@ -189,7 +220,7 @@ export default function TransactionDetail() {
                                         >
                                             {customer.name}
                                         </Text>
-                                     
+
                                         <Box
                                             sx={{
                                                 pt: '10px',
@@ -497,25 +528,27 @@ export default function TransactionDetail() {
                                             overflowX: 'scroll',
                                         }}
                                     >
-                                        {imageUrl.length > 0 && imageUrl.split(',').map((url, index) => (
-                                            <Box
-                                                key={index}
-                                                sx={{
-                                                    width: '300px',
-                                                    height: '170px',
-                                                    padding: '0px 5px',
-                                                }}
-                                            >
-                                                <Image
+                                        {imageUrl.length > 0 &&
+                                            imageUrl.split(',').map((url, index) => (
+                                                <Box
+                                                    key={index}
                                                     sx={{
-                                                        width: '100%',
-                                                        height: '100%',
-                                                        objectFit: 'cover',
+                                                        width: '300px',
+                                                        height: '170px',
+                                                        padding: '0px 5px',
                                                     }}
-                                                    src={url}
-                                                ></Image>
-                                            </Box>
-                                        ))}
+                                                >
+                                                    <Image
+                                                    onClick={() => openImageViewer(index)}
+                                                        sx={{
+                                                            width: '100%',
+                                                            height: '100%',
+                                                            objectFit: 'cover',
+                                                        }}
+                                                        src={url}
+                                                    ></Image>
+                                                </Box>
+                                            ))}
                                     </Box>
                                     <Text
                                         as="p"
@@ -598,32 +631,96 @@ export default function TransactionDetail() {
                                         Danh sách xe gợi ý
                                     </Text>
                                     <Box>
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                borderBottom: '1px solid #363636',
-                                                fontWeight: '500',
-                                                paddingBottom: '10px',
-                                            }}
-                                        >
-                                            <Box>
-                                                <label for="birthday">Birthday:</label>
-                                                <input type="date" id="birthday" name="birthday" />
-                                            </Box>
-                                            <Box>
-                                                <label for="birthday">Birthday:</label>
-                                                <input type="date" id="birthday" name="birthday" />
-                                            </Box>
-                                            <Box sx={{ marginLeft: 'auto' }}>
-                                                <label for="birthday">Search</label>
-                                                <input
-                                                    placeholder="Tìm kiếm đơn vận chuyển..."
-                                                    type="text"
-                                                    id="birthday"
-                                                    name="birthday"
-                                                />
-                                            </Box>
-                                        </Box>
+                                    <Box
+                sx={{
+                    display: 'flex',
+                    borderBottom: '1px solid gray',
+                    paddingBottom: '10px',
+                }}
+            >
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Text
+                        sx={{
+                            fontWeight: '600',
+                            color: '#476282',
+                            padding: '3px 10px',
+                        }}
+                    >
+                        Hiển thị
+                    </Text>
+                    <Select
+                        sx={{
+                            border: '1px solid #e3e3e3',
+                            background: '#cdcdcd14',
+                            padding: '4px',
+                            outline: 'none',
+                            width: '160px',
+                        }}
+                        id="location"
+                        name="vehicleId"
+                        // onChange={}
+                    >
+                        <option>Tất cả</option>
+                        <option>Xe phù hợp</option>
+                    </Select>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Text
+                        sx={{
+                            fontWeight: '600',
+                            color: '#476282',
+                            padding: '3px 10px',
+                        }}
+                    >
+                        Hiển thị
+                    </Text>
+                    <input
+                                style={{
+                                    height: '40px',
+                                    width: '180px',
+                                    border: '1px solid #e3e3e3',
+                                    background: '#cdcdcd14',
+                                }}
+                                type="date"
+                                id="birthDay"
+                                name="birthDay"
+                                // onChange={handleChange}
+                            ></input>
+                </Box>
+                <Box  sx={{ marginLeft: 'auto',  display: 'flex', alignItems: 'center' }}>
+                    <Label mr={2} sx={{  fontWeight: '600',
+                            color: '#476282', width: 'auto', minWidth: 'fit-content' }} htmlFor="name">
+                        Tìm kiếm
+                    </Label>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            outline: 'none',
+                            border: '1px solid #e3e3e3',
+                            background: '#cdcdcd14',
+                            paddingRight: '5px',
+                            fontSize: '18px'
+                        }}
+                    >
+                        <Input
+                            sx={{
+                                width: '400px',
+                                outline: 'none',
+                                border: 'none',
+                            fontSize: '15px'
+                            }}
+                            name="name"
+                            onChange={(e) => {
+                                // handleFilter(e.target.value)
+                            }}
+                            type="text"
+                            placeholder="Tìm kiếm đơn vận chuyển..."
+                        />
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </Box>
+                </Box>
+            </Box>
                                         <Box
                                             sx={{
                                                 display: 'table',
@@ -646,7 +743,7 @@ export default function TransactionDetail() {
                                                         display: 'table-cell',
                                                         fontWeight: '600',
                                                         color: '#1b3a57',
-                                                        textAlign: 'center'
+                                                        textAlign: 'center',
                                                     }}
                                                 >
                                                     STT
@@ -657,7 +754,7 @@ export default function TransactionDetail() {
                                                         display: 'table-cell',
                                                         fontWeight: '600',
                                                         color: '#1b3a57',
-                                                        textAlign: 'center'
+                                                        textAlign: 'center',
                                                     }}
                                                 >
                                                     Loại xe
@@ -668,7 +765,7 @@ export default function TransactionDetail() {
                                                         display: 'table-cell',
                                                         fontWeight: '600',
                                                         color: '#1b3a57',
-                                                        textAlign: 'center'
+                                                        textAlign: 'center',
                                                     }}
                                                 >
                                                     Tài xế
@@ -679,7 +776,7 @@ export default function TransactionDetail() {
                                                         display: 'table-cell',
                                                         fontWeight: '600',
                                                         color: '#1b3a57',
-                                                        textAlign: 'center'
+                                                        textAlign: 'center',
                                                     }}
                                                 >
                                                     Trọng tải(Kg)
@@ -690,7 +787,7 @@ export default function TransactionDetail() {
                                                         display: 'table-cell',
                                                         fontWeight: '600',
                                                         color: '#1b3a57',
-                                                        textAlign: 'center'
+                                                        textAlign: 'center',
                                                     }}
                                                 >
                                                     Thùng chứa(m3)
@@ -701,15 +798,21 @@ export default function TransactionDetail() {
                                                         display: 'table-cell',
                                                         fontWeight: '600',
                                                         color: '#1b3a57',
-                                                        textAlign: 'center'
+                                                        textAlign: 'center',
                                                     }}
                                                 >
-                                                   Hành động
+                                                    Hành động
                                                 </Box>
                                             </Box>
-                                            {drivers && drivers.map((driver,index)=><DriverItem driver={driver} handle={handleChosenDriver} key={index} index={index + 1} />)}
-                                            
-                                            
+                                            {drivers &&
+                                                drivers.map((driver, index) => (
+                                                    <DriverItem
+                                                        driver={driver}
+                                                        handle={handleChosenDriver}
+                                                        key={index}
+                                                        index={index + 1}
+                                                    />
+                                                ))}
                                         </Box>
                                     </Box>
                                     <Text
@@ -729,57 +832,130 @@ export default function TransactionDetail() {
                                     >
                                         Hành động
                                     </Text>
-                                    <Box sx={{display: 'flex', justifyContent:'flex-start', marginTop: '10px', paddingBottom: '200px'}}>
-                                    {chosenDriver && <Text
-                                        as="span"
-                                        sx={{
-                                            zIndex: 1,
-                                            color: '#1b3a57',
-                                            pr: '10px',
-                                            fontSize: '15px',
-                                            marginTop: '10px',
-                                            justifySelf: 'flex-start',
-                                            marginRight: 'auto'
-                                        }}
-                                    >
-                                        *Gửi yêu cầu vận chuyển cho <Text
-                                        as="span"
-                                        sx={{
-                                            zIndex: 1,
-                                            color: '#1b3a57',
-                                            pr: '10px',
-                                            fontSize: '15px',
-                                            marginTop: '10px',
-                                            justifySelf: 'flex-start',
-                                            marginRight: 'auto',
-                                            fontWeight: '600'
-                                        }}
-                                    >
-                                        {chosenVehicle.name}</Text>do tài xế <Text
-                                        as="span"
-                                        sx={{
-                                            zIndex: 1,
-                                            color: '#1b3a57',
-                                            pr: '10px',
-                                            fontSize: '15px',
-                                            marginTop: '10px',
-                                            justifySelf: 'flex-start',
-                                            marginRight: 'auto',
-                                            fontWeight: '600'
-
-                                        }}
-                                    >
-                                        {chosenDriver.name}
-                                    </Text>điều khiển.
-                                    </Text>}
-                                        <Button className='bg-warning ml-auto' mr={2} sx={{background: 'blue',padding: '10px 20px'}} ><i class="fa fa-minus-circle" aria-hidden="true"></i> Hủy yêu cầu</Button>
-                                        <Button  onClick={()=>{handleCompleteOrder()}} className='bg-success' sx={{background: 'blue',padding: '10px 35px'}} ><i class="fa fa-check" aria-hidden="true"></i> Hoàn tất</Button>
-                                    </Box>
+                                    {transaction.status === 'pending' && (
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                justifyContent: 'flex-start',
+                                                marginTop: '10px',
+                                                paddingBottom: '200px',
+                                            }}
+                                        >
+                                            {chosenDriver && (
+                                                <Text
+                                                    as="span"
+                                                    sx={{
+                                                        zIndex: 1,
+                                                        color: '#1b3a57',
+                                                        pr: '10px',
+                                                        fontSize: '15px',
+                                                        marginTop: '10px',
+                                                        justifySelf: 'flex-start',
+                                                        marginRight: 'auto',
+                                                    }}
+                                                >
+                                                    *Gửi yêu cầu vận chuyển cho{' '}
+                                                    <Text
+                                                        as="span"
+                                                        sx={{
+                                                            zIndex: 1,
+                                                            color: '#1b3a57',
+                                                            pr: '10px',
+                                                            fontSize: '15px',
+                                                            marginTop: '10px',
+                                                            justifySelf: 'flex-start',
+                                                            marginRight: 'auto',
+                                                            fontWeight: '600',
+                                                        }}
+                                                    >
+                                                        {chosenVehicle.name}
+                                                    </Text>
+                                                    do tài xế{' '}
+                                                    <Text
+                                                        as="span"
+                                                        sx={{
+                                                            zIndex: 1,
+                                                            color: '#1b3a57',
+                                                            pr: '10px',
+                                                            fontSize: '15px',
+                                                            marginTop: '10px',
+                                                            justifySelf: 'flex-start',
+                                                            marginRight: 'auto',
+                                                            fontWeight: '600',
+                                                        }}
+                                                    >
+                                                        {chosenDriver.name}
+                                                    </Text>
+                                                    điều khiển.
+                                                </Text>
+                                            )}
+                                            <Button
+                                                className="bg-warning ml-auto"
+                                                mr={2}
+                                                sx={{ background: 'blue', padding: '10px 20px' }}
+                                                onClick={() => {
+                                                    handleCancelCustomer()
+                                                }}
+                                            >
+                                                <i
+                                                    class="fa fa-minus-circle"
+                                                    aria-hidden="true"
+                                                ></i>{' '}
+                                                Hủy yêu cầu
+                                            </Button>
+                                            <Button
+                                                onClick={() => {
+                                                    handleCompleteOrder()
+                                                }}
+                                                className="bg-success"
+                                                sx={{ background: 'blue', padding: '10px 35px' }}
+                                            >
+                                                <i class="fa fa-check" aria-hidden="true"></i> Hoàn
+                                                tất
+                                            </Button>
+                                        </Box>
+                                    )}
+                                    {transaction.status === 'driverPending' && (
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                justifyContent: 'flex-start',
+                                                marginTop: '10px',
+                                                paddingBottom: '200px',
+                                            }}
+                                        >
+                                            <Button
+                                                className="bg-warning ml-auto"
+                                                mr={2}
+                                                sx={{ background: 'blue', padding: '10px 20px' }}
+                                                onClick={() => {
+                                                    handleCancelDriver()
+                                                }}
+                                            >
+                                                <i
+                                                    class="fa fa-minus-circle"
+                                                    aria-hidden="true"
+                                                ></i>{' '}
+                                                Hủy chuyển giao yêu cầu
+                                            </Button>
+                                        </Box>
+                                    )}
                                 </Box>
                             </Box>
                         </Box>
                     </Box>
                 </Box>
+                
+      {isViewerOpen && (
+        <ImageViewer
+          src={images}
+          currentIndex={currentImage}
+          onClose={closeImageViewer}
+          backgroundStyle={{
+            backgroundColor: "rgba(0,0,0,0.9)"
+          }}
+        />
+      )}
             </div>
         )
     }

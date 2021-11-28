@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 // import "../../styles.css";
-import { app } from '../firebaseConfig'
+import { app } from '../../firebaseConfig'
 import { Box, Button, Text, Image } from 'rebass'
 import axios from 'axios'
 

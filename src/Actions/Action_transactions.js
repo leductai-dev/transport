@@ -7,6 +7,18 @@ export const setDataTransaction =(data)=>{
     })
 } 
 
+export const restricted =()=>{
+    return({
+        type : 'Action_Restricted',
+    })
+} 
+
+export const expand =()=>{
+    return({
+        type : 'Action_Expand',
+    })
+} 
+
 
 
 

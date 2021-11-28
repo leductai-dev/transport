@@ -1,120 +1,190 @@
-import React, { useEffect, useState } from "react";
-import TransactionList from "../Components/TransactionList";
-import TransactionItem from "../Components/TransactionItem";
-import { app } from "../firebaseConfig";
-import { Box, Text, Image, Button } from "rebass";
+import React, { useEffect, useState,useRef } from 'react'
+import TransactionList from '../Components/ManageTransaction/TransactionList'
+import { app } from '../firebaseConfig'
+import { Box, Text, Image, Button } from 'rebass'
 
 export default function History() {
-    const [pending, setPending] = useState();
-    const [progress, setProgress] = useState();
-    const [completed, setCompleted] = useState();
-
+    const [all, setAll] = useState([])
+    const [pending, setPending] = useState([])
+    const [driverPending, setDriverPeding] = useState([])
+    const [inProgress, setInProgress] = useState([])
+    const [completed, setCompleted] = useState([])
+    const [canceled, setCanceled] = useState([])
+    const ref = useRef()
+    const scroll = () =>{
+        ref.current.scrollIntoView({
+            behavior: 'smooth'
+        }, 500)
+    }
     useEffect(() => {
-       
-    }, []);
+        const db_Transactions = app.database().ref().child('/transactions')
+        const pending = []
+        const driverPending = []
+        const inProgress = []
+        const completed = []
+        const canceled = []
+        db_Transactions.once('value', (snap) => {
+            if (snap.val()) {
+                Object.values(snap.val()).forEach((item) => {
+                    if (item.status === 'pending') {
+                        pending.push(item)
+                    }
+                    if (item.status === 'driverPending') {
+                        driverPending.push(item)
+                    }
+                    if (item.status === 'inProgress') {
+                        inProgress.push(item)
+                    }
+                    if (item.status === 'completed') {
+                        completed.push(item)
+                    }
+                    if (item.status === 'canceled') {
+                        canceled.push(item)
+                    }
+                })
 
-    console.log("pending")
-    console.log(pending)
+                setAll(Object.values(snap.val()))
+                setPending(pending)
+                setDriverPeding(driverPending)
+                setInProgress(inProgress)
+                setCompleted(completed)
+                setCanceled(canceled)
+            }
+        })
+    }, [])
+
     return (
         <div className="flex-grow-1 map">
-            <Box
+            <Box ref={ref}
                 sx={{
-                    p: "15px",
-                    background: "#fff",
-                    minHeight: "100vh",
+                    p: '15px',
+                    background: '#fff',
+                    minHeight: '100vh',
                 }}
             >
                 <Text
                     sx={{
-                        fontSize: "30px",
-                        fontWeight: "bold",
-                        color: "#1b3a57",
+                        fontSize: '30px',
+                        fontWeight: 'bold',
+                        color: '#1b3a57',
                     }}
                     as="h1"
                 >
                     Quản lý vận chuyển
                 </Text>
-                <hr style={{ marginTop: "5px", marginBottom: "0px" }} />
+                <hr style={{ marginTop: '5px', marginBottom: '0px' }} />
                 <Box>
-                    <Box sx={{ paddingTop: "20px" }}>
+                    <Box sx={{ paddingTop: '20px' }}>
                         <ul
-                            style={{ borderBottom: "none" }}
+                            style={{ borderBottom: 'none' }}
                             className="nav nav-tabs ul-height"
                             role="tablist"
                         >
                             <li className="nav-item">
                                 <a
                                     style={{
-                                        border: "none",
-                                        paddingLeft: "0 !important",
-                                   color: "#476282",
-                                        fontWeight: 600,     
+                                        border: 'none',
+                                        paddingLeft: '0 !important',
+                                        color: '#476282',
+                                        fontWeight: 600,
                                     }}
                                     className="nav-link active"
                                     data-toggle="tab"
                                     href="#all"
                                 >
-                                    Tất cả (3)
+                                    Tất cả ({all.length})
                                 </a>
                             </li>
                             <li className="nav-item">
                                 <a
                                     style={{
-                                        border: "none",
-                                        color: "#476282",
+                                        border: 'none',
+                                        color: '#476282',
                                     }}
                                     className="nav-link "
                                     data-toggle="tab"
                                     href="#home"
                                 >
-                                    Chờ xử lý
+                                    Chờ xử lý ({pending.length})
                                 </a>
                             </li>
-                            
                             <li className="nav-item">
                                 <a
                                     style={{
-                                        border: "none",
-                                        color: "#476282",
+                                        border: 'none',
+                                        color: '#476282',
+                                    }}
+                                    className="nav-link "
+                                    data-toggle="tab"
+                                    href="#chuyengiao"
+                                >
+                                    Đã chuyển giao ({driverPending.length})
+                                </a>
+                            </li>
+
+                            <li className="nav-item">
+                                <a
+                                    style={{
+                                        border: 'none',
+                                        color: '#476282',
                                     }}
                                     className="nav-link"
                                     data-toggle="tab"
                                     href="#menu1"
                                 >
-                                    Đang diễn ra
+                                    Đang vận chuyển ({inProgress.length})
                                 </a>
                             </li>
                             <li className="nav-item">
                                 <a
                                     style={{
-                                        border: "none",
-                                        color: "#476282",
+                                        border: 'none',
+                                        color: '#476282',
                                     }}
                                     className="nav-link"
                                     data-toggle="tab"
                                     href="#menu2"
                                 >
-                                    Đã hoàn thành
+                                    Đã hoàn thành ({completed.length})
+                                </a>
+                            </li>
+                            <li className="nav-item">
+                                <a
+                                    style={{
+                                        border: 'none',
+                                        color: '#476282',
+                                    }}
+                                    className="nav-link "
+                                    data-toggle="tab"
+                                    href="#dahuy"
+                                >
+                                    Đã Hủy ({canceled.length})
                                 </a>
                             </li>
                         </ul>
                         <div className=" tab-content tab-container">
-                            <div id="all" className="container tab-pane active">
-                                <TransactionList type={null}/>
-                            </div>  
-                            <div id="home" className="container tab-pane fade">
-                            <TransactionList type={'pending'}/>
+                            <div id="all" className=" tab-pane active">
+                                <TransactionList callbackFunc={scroll} data={all} />
                             </div>
-                            <div id="menu1" className="container tab-pane fade">
-                            <TransactionList type={'inProgress'}/>
+                            <div id="home" className=" tab-pane fade">
+                                <TransactionList callbackFunc={scroll} data={pending} />
                             </div>
-                            <div id="menu2" className="container tab-pane fade">
-                                <TransactionList type={'completed'}/>
+                            <div id="chuyengiao" className=" tab-pane fade">
+                                <TransactionList callbackFunc={scroll} data={driverPending} />
+                            </div>
+                            <div id="menu1" className=" tab-pane fade">
+                                <TransactionList callbackFunc={scroll} data={inProgress} />
+                            </div>
+                            <div id="menu2" className=" tab-pane fade">
+                                <TransactionList callbackFunc={scroll} data={completed} />
+                            </div>
+                            <div id="dahuy" className=" tab-pane fade">
+                                <TransactionList callbackFunc={scroll} data={canceled} />
                             </div>
                         </div>
                     </Box>
                 </Box>
             </Box>
         </div>
-    );
+    )
 }

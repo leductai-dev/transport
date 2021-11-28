@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { app } from '../firebaseConfig'
+import { app } from '../../firebaseConfig'
 import { Box, Text, Image, Button } from 'rebass'
 import ModalTransaction from './ModalTransactionInfo'
 import { useHistory } from 'react-router-dom'
@@ -13,6 +13,8 @@ export default function DriverItem({driver, index, handle}) {
     useEffect(() => {
         const vehicle_db = app.database().ref().child(`/vehicles/${driver.vehicleId}`)
         vehicle_db.once('value', (snap) => {
+            console.log(driver.name)
+            console.log(snap.val())
             if (snap.val()) {
                 setVehicle(snap.val())
             }

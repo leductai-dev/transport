@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { app } from '../firebaseConfig'
+import { app } from '../../firebaseConfig'
 import { Box, Text, Image, Button } from 'rebass'
 import ModalTransaction from './ModalTransactionInfo'
 import { useHistory } from 'react-router-dom'
-import convertDate from '../Utils/ConvertDate'
+import convertDate from '../../Utils/ConvertDate'
 
 export default function TransactionItem({ data }) {
     const [showTransactionInfo, setShowTransactionInfo] = useState(false)
@@ -17,7 +17,7 @@ export default function TransactionItem({ data }) {
                 setUser(snap.val())
             }
         })
-    }, [])
+    }, [data])
     return (
         <>
             <Box
@@ -55,19 +55,20 @@ export default function TransactionItem({ data }) {
                     py={'5px'}
                     sx={{ display: 'table-cell', textAlign: 'center', color: '#476282' }}
                 >
-                    {status === 'pending' ? 'Chờ xử lý' : status === 'inProgress' ? 'Đang giao' : 'Đã hoàn tất'}
+                    {status === 'pending' ? 'Chờ xử lý' : status === 'inProgress' ? 'Đang giao' : status==='driverPending'? 'Chuyển giao' : status==='completed'?'Hoàn tất' : 'Đã hủy'}
                 </Box>
                 <Box
                     py={'5px'}
                     sx={{ display: 'table-cell', textAlign: 'center', color: '#476282' }}
                 >
                     <Button
-                        sx={{ background: 'cornflowerblue' }}
+                        sx={{   background: '#476282',
+                        color: 'white', }}
                         onClick={() => {
                             history.push(`/transaction/${transactionId}`)
                         }}
                     >
-                        Chi tiết
+                         <i class="fa fa-eye" aria-hidden="true"></i>  Chi tiết
                     </Button>
                 </Box>
             </Box>

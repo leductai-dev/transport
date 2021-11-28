@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import HistoryItem from '../historyItem'
-import { app } from '../../firebaseConfig'
 import { Box, Text, Image, Button } from 'rebass'
 import Modal from "./ModalAddMember"
+import { Input, Label, Select, Checkbox } from '@rebass/forms'
 
 export default function VehicleList({ children, vehicles }) {
     const [modal, setModal] = useState(false);
+    const handleChange = () =>{
+
+    }
 
     return (
         <Box sx={{
@@ -22,31 +24,66 @@ export default function VehicleList({ children, vehicles }) {
                 }}
             >
                 <Box sx={{display:'flex'}}>
-                    <Text sx={{ fontWeight: '600', color: '#476282',padding: '3px 10px'}}>Phân loại xe:</Text>
-                    <select style={{width: '150px'}}>
-                        <option>Loại 1</option>
-                        <option>Loại 1</option>
-                        <option>Loại 1</option>
-                    </select>
+                    <Text sx={{lineHeight: '28px', fontWeight: '600', color: '#476282',padding: '3px 10px'}}>Loại phương tiện</Text>
+                    <Select
+                        sx={{ border: '1px solid #e3e3e3', background: '#cdcdcd14',padding: '4px', outline: 'none', width: '160px' }}
+                        id="location"
+                        name="vehicleId"
+                        onChange={handleChange}
+                    >
+                        <option value="">Tất cả</option>
+                        {vehicles ? (
+                            vehicles.map((vehicle, index) => (
+                                <option key={index} value={vehicle.vehicleId}>
+                                    {vehicle.name}
+                                </option>
+                            ))
+                        ) : (
+                            <option value="">Chưa có xe nào</option>
+                        )}
+                    </Select>
                 </Box>
                 
-                <Box sx={{display:'flex', alignItems: 'center'}} mr={3}>
-                <Text sx={{ fontWeight: '600', color: '#476282'}}>Tìm kiếm</Text>
-                <input
-                    placeholder="Nhập tên hoặc số thoại, biển số xe..."
-                    type="text"
-                    style={{
-                        borderRadius: '50px',
-                        padding: '5px 10px',
-                        outline: 'none',
-                        border: '1px solid #476282',
-                        width: '400px',
-                    }}
-                />
+                <Box mr={4} sx={{  display: 'flex', alignItems: 'center' }}>
+                    <Label mr={2} sx={{  fontWeight: '600',
+                            color: '#476282', width: 'auto', minWidth: 'fit-content' }} htmlFor="name">
+                        Tìm kiếm
+                    </Label>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            outline: 'none',
+                            border: '1px solid #e3e3e3',
+                            background: '#cdcdcd14',
+                            paddingRight: '5px',
+                            fontSize: '18px'
+                        }}
+                    >
+                        <Input
+                            sx={{
+                                width: '400px',
+                                outline: 'none',
+                                border: 'none',
+                            fontSize: '15px'
+                            }}
+                            name="name"
+                            onChange={(e) => {
+                                // handleFilter(e.target.value)
+                            }}
+                            type="text"
+                            placeholder="Tìm kiếm đơn vận chuyển..."
+                        />
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </Box>
                 </Box>
                 <Button onClick={()=>{setModal(true)}} sx={{
                     background: '#476282',
-                    color: 'white'
+                    color: 'white',
+                    transition: 'all 0.3s',
+                    '&:hover':{
+                        transform: 'scale(1.1)'
+                    }
                 }}>
                     <Image sx={{width: '18px', verticalAlign:"sub"}} mr={1} src="/png/plus.png"/>
                     <Text as="span">Thêm mới</Text></Button>

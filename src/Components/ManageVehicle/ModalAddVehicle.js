@@ -11,19 +11,16 @@ export default function ModalAddMember({ close, data }) {
     const [formData, setFormData] = React.useState({
         name: data?.name || '',
         totalCount: data?.totalCount || '',
-        using: 0,
+        using: data?.using || 0 ,
         image: data?.image || '',
         length: data?.length || '',
         width: data?.width || '',
         height: data?.height || '',
         payload: data?.payload || '',
     })
-    console.log('formData')
-    console.log(formData)
 
     const handleSubmit = () => {
         const { name, totalCount, length, width, height, payload } = formData
-        console.log(formData)
 
         try {
             if (data) {

@@ -6,32 +6,70 @@ import { app } from '../../firebaseConfig'
 import { v4 as uuidv4 } from 'uuid'
 import uploadPhoto from '../../Utils/UploadImg'
 
-export default function ModalAddMember({ close,vehicles }) {
+export default function ModalAddMember({ close, vehicles, data }) {
     const [images, setImages] = React.useState([])
     const [formData, setFormData] = React.useState({
-        name: '',
-        phone: '',
-        sex: true,
-        joinDate: '',
-        birthDay: '',
-        vehicleId: '',
-        status: true
+        name: data?.name || '',
+        phone: data?.phone || '',
+        sex: data?.sex || true,
+        joinDate: data?.joinDate || '',
+        birthDay: data?.birthDay || '',
+        vehicleId: data?.vehicleId || '',
+        status: true,
+        image: data?.image || '',
     })
 
     const handleSubmit = () => {
         const { name, phone, sex, joinDate, birthDay, vehicleId } = formData
-        console.log(formData)
-        if (!name || !phone || !joinDate || !birthDay || !vehicleId || images.length ===0) {
-            alert('Vui lòng nhập đầy đủ thông tin!')
-            return
-        }
         try {
+            const db_Vehicles_New = app.database().ref().child(`/vehicles/${formData.vehicleId}`)
+
+            const newVehicle = vehicles.filter(vehicle => vehicle.vehicleId ===formData.vehicleId)[0]
+            if (data) {
+                if (!name || !phone || !joinDate || !birthDay || !vehicleId) {
+                    alert('Vui lòng nhập đầy đủ thông tin!')
+                    return
+                }
+                const db_Vehicles_Old = app.database().ref().child(`/vehicles/${data.vehicleId}`)
+                const oldVehicle = vehicles.filter(vehicle => vehicle.vehicleId ===data.vehicleId)[0]
+    
+                const db_Drivers = app.database().ref().child(`/drivers/${data.driverId}`)
+              
+
+                if (images[0]) {
+                    uploadPhoto(images[0].data_url).then((res) => {
+                        const _data = { ...data, ...formData, image: res.message }
+                        db_Drivers.update(_data)
+                        db_Vehicles_New.update({...newVehicle, using: newVehicle.using + 1})
+                        db_Vehicles_Old.update({...oldVehicle, using: oldVehicle.using - 1})
+                        close()
+                        alert('Cập nhật thành công!')
+                    })
+
+                    return
+                }
+                const _data = { ...data, ...formData }
+                db_Drivers.update(_data).then(() => {
+                    close()
+                    db_Vehicles_New.update({...newVehicle, using: newVehicle.using + 1})
+                        db_Vehicles_Old.update({...oldVehicle, using: oldVehicle.using - 1})
+                    alert('Cập nhật thành công!')
+                })
+                return
+            }
+
+            if (!name || !phone || !joinDate || !birthDay || !vehicleId || images.length === 0) {
+                alert('Vui lòng nhập đầy đủ thông tin!')
+                return
+            }
             uploadPhoto(images[0].data_url).then((res) => {
                 const driverId = uuidv4()
                 const db_Drivers = app.database().ref().child(`/drivers/${driverId}`)
                 const code = Math.floor(Math.random() * 899999 + 100000)
-                const data = { ...formData, image: res.message,  driverId, code}
+                const data = { ...formData, image: res.message, driverId, code }
                 db_Drivers.set(data).then(() => {
+                    console.log(newVehicle)
+                    db_Vehicles_New.update({...newVehicle, using: newVehicle.using + 1})
                     close()
                     alert('Thêm thành công!')
                 })
@@ -42,8 +80,6 @@ export default function ModalAddMember({ close,vehicles }) {
     }
 
     const handleChange = (e) => {
-        console.log(e.target.name)
-        console.log(e.target.value)
         setFormData({ ...formData, [e.target.name]: Number(e.target.value) || e.target.value })
     }
 
@@ -80,7 +116,7 @@ export default function ModalAddMember({ close,vehicles }) {
                         marginBottom: '15px',
                     }}
                 >
-                    Thêm thành viên
+                    {data ? 'Chỉnh sửa thông tin' : 'Thêm thành viên'}
                 </Text>
                 <Button
                     sx={{ backgroundColor: 'blue' }}
@@ -113,11 +149,10 @@ export default function ModalAddMember({ close,vehicles }) {
                                     <Box
                                         sx={{
                                             position: 'relative',
-                                            marginRight: '15px',
-                                            marginBottom: '15px',
                                             border: '1px solid #b3abab',
                                             width: '80px',
                                             height: '90px',
+                                            marginTop: '20px',
                                         }}
                                     >
                                         <Image
@@ -155,7 +190,8 @@ export default function ModalAddMember({ close,vehicles }) {
                                             border: 'none',
                                             overflow: 'hidden',
                                             borderStyle: 'outset',
-                                            marginTop: '20px'
+                                            marginTop: '20px',
+                                            padding: 0,
                                         }}
                                         onClick={(e) => {
                                             e.preventDefault()
@@ -173,7 +209,7 @@ export default function ModalAddMember({ close,vehicles }) {
                                                     transform: 'scale(1.2)',
                                                 },
                                             }}
-                                            src="/png/upload-placeholder.jpg"
+                                            src={formData.image || '/png/upload-placeholder.jpg'}
                                         ></Image>
                                     </Button>
                                 )}
@@ -190,6 +226,7 @@ export default function ModalAddMember({ close,vehicles }) {
                                     border: '1px solid #e3e3e3',
                                     background: '#cdcdcd14',
                                 }}
+                                defaultValue={formData.name}
                                 name="name"
                                 onChange={handleChange}
                                 type="text"
@@ -204,6 +241,7 @@ export default function ModalAddMember({ close,vehicles }) {
                                     border: '1px solid #e3e3e3',
                                     background: '#cdcdcd14',
                                 }}
+                                defaultValue={formData.phone}
                                 name="phone"
                                 type="text"
                                 onChange={handleChange}
@@ -225,6 +263,7 @@ export default function ModalAddMember({ close,vehicles }) {
                                     border: '1px solid #e3e3e3',
                                     background: '#cdcdcd14',
                                 }}
+                                defaultValue={formData.birthDay}
                                 type="date"
                                 id="birthDay"
                                 name="birthDay"
@@ -236,6 +275,7 @@ export default function ModalAddMember({ close,vehicles }) {
                                 Ngày tham gia
                             </Label>
                             <input
+                                defaultValue={formData.joinDate}
                                 style={{
                                     height: '40px',
                                     width: '180px',
@@ -282,11 +322,19 @@ export default function ModalAddMember({ close,vehicles }) {
                         sx={{ border: '1px solid #e3e3e3', background: '#cdcdcd14' }}
                         id="location"
                         name="vehicleId"
-                        defaultValue="NYC"
+                        defaultValue={formData.vehicleId}
                         onChange={handleChange}
-                    >{vehicles ? vehicles.map((vehicle,index) =>(
-                        <option key={index} value={vehicle.vehicleId}>{vehicle.name}</option>
-                    )):  <option value=''>Chưa có xe nào</option>}
+                    >
+                        <option value="">Chọn xe</option>
+                        {vehicles ? (
+                            vehicles.map((vehicle, index) => (
+                                <option disabled={vehicle.using === vehicle.totalCount} key={index} value={vehicle.vehicleId}>
+                                    {vehicle.name}
+                                </option>
+                            ))
+                        ) : (
+                            <option value="">Chưa có xe nào</option>
+                        )}
                     </Select>
                 </Box>
 
@@ -303,7 +351,7 @@ export default function ModalAddMember({ close,vehicles }) {
                             handleSubmit()
                         }}
                     >
-                        Thêm
+                        {data ? 'Cập nhật' : 'Thêm'}
                     </Button>
                 </Box>
             </Box>

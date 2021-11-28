@@ -4,19 +4,25 @@ import { Box, Text, Image, Button } from 'rebass'
 import Modal from './ModalAddVehicle'
 import { useHistory } from 'react-router-dom'
 
-export default function VehicleItem({data}) {
-    
+export default function VehicleItem({ data }) {
     const [modal, setModal] = useState(false)
     const [modalData, setModalData] = useState(null)
 
     const [user, setUser] = useState({})
     const history = useHistory()
-    const { image,name,vehicleId, weight, height,length,width, payload, using, totalCount } = data
+    const { image, name, vehicleId, weight, height, length, width, payload, using, totalCount } =
+        data
     console.log(data)
-   
-    const handleRemove = ()=>{
+
+    const handleRemove = () => {
         const db_Vehicle = app.database().ref().child(`/vehicles/${data.vehicleId}`)
-        if(window.confirm("Xác nhận xóa?")){
+        if (using > 0) {
+            alert(
+                `Xóa thất bại! Xe này đang được sử dụng. Vui lòng chọn xe khác cho tài xế vận chuyển trước trước khi xóa.`
+            )
+            return
+        }
+        if (window.confirm('Xác nhận xóa?')) {
             db_Vehicle.remove()
         }
     }
@@ -37,13 +43,10 @@ export default function VehicleItem({data}) {
                         verticalAlign: 'middle',
                         textAlign: 'center',
                         color: '#476282',
-                        width: '120px'
+                        width: '120px',
                     }}
                 >
-                    <Image
-                        sx={{height: '70px',objectFit:'cover' }}
-                        src={image}
-                    />
+                    <Image sx={{ height: '70px', objectFit: 'cover' }} src={image} />
                 </Box>
                 <Box
                     py={'5px'}
@@ -54,7 +57,7 @@ export default function VehicleItem({data}) {
                         color: '#476282',
                     }}
                 >
-                   {name}
+                    {name}
                 </Box>
                 <Box
                     py={'5px'}
@@ -63,7 +66,7 @@ export default function VehicleItem({data}) {
                         verticalAlign: 'middle',
                         textAlign: 'center',
                         color: '#476282',
-                        width: '120px'
+                        width: '120px',
                     }}
                 >
                     {length} x {width} x {height}(m)
@@ -75,8 +78,7 @@ export default function VehicleItem({data}) {
                         verticalAlign: 'middle',
                         textAlign: 'center',
                         color: '#476282',
-                        width: '120px'
-
+                        width: '120px',
                     }}
                 >
                     {payload}kg
@@ -88,10 +90,10 @@ export default function VehicleItem({data}) {
                         verticalAlign: 'middle',
                         textAlign: 'center',
                         color: '#476282',
-                        width: '120px'
+                        width: '120px',
                     }}
                 >
-                   {totalCount}
+                    {totalCount}
                 </Box>
                 <Box
                     py={'5px'}
@@ -100,8 +102,7 @@ export default function VehicleItem({data}) {
                         verticalAlign: 'middle',
                         textAlign: 'center',
                         color: '#476282',
-                        width: '120px'
-
+                        width: '120px',
                     }}
                 >
                     {using}
@@ -113,12 +114,12 @@ export default function VehicleItem({data}) {
                         verticalAlign: 'middle',
                         textAlign: 'center',
                         color: '#476282',
-                        width: '160px'
+                        width: '160px',
                     }}
                 >
                     <Button
                         mr={2}
-                        sx={{ background: 'linear-gradient(to left, #005bea 0%, #00c6fb 100%)' }}
+                        sx={{ background: '#476282', color: 'white' }}
                         onClick={() => {
                             setModalData(data)
                             setModal(true)
@@ -127,16 +128,24 @@ export default function VehicleItem({data}) {
                         Sửa
                     </Button>
                     <Button
-                        sx={{ background: 'linear-gradient(to left, #005bea 0%, #00c6fb 100%)' }}
+                        sx={{ background: '#476282', color: 'white' }}
                         onClick={() => {
-                           handleRemove()
+                            handleRemove()
                         }}
                     >
                         Xóa
                     </Button>
                 </Box>
             </Box>
-            {modal && <Modal close={()=>{setModal(false) ; setModalData(null)}} data={modalData}/>}
+            {modal && (
+                <Modal
+                    close={() => {
+                        setModal(false)
+                        setModalData(null)
+                    }}
+                    data={modalData}
+                />
+            )}
         </>
     )
 }

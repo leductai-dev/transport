@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 
 import React, { useState } from "react";
 export const MenuOption = ({ transactions }) => {
-    const [showOptions, setShowOptions] = useState(true);
+    const [showOptions, setShowOptions] = useState(false);
     const dispatch = useDispatch();
 
     return (
