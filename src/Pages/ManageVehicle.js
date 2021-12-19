@@ -18,9 +18,8 @@ const ManagerTeam = () => {
         db_Vehicles.on('value', (snap) => {
             if (snap.val()) {
                     setData(Object.values(snap.val()))
+                    setPagination({...pagination,totalCount:Object.values(snap.val()).length})
             }
-            setPagination({...pagination,totalCount:Object.values(snap.val()).length})
-
         })
     }, [])
     return (

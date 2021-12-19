@@ -11,7 +11,7 @@ export default function TransactionList({ data, callbackFunc }) {
     const { limit, page } = pagination
     const [_data, set_data] = useState([])
     const [users, setUser] = useState([])
-
+    console.log(data)
     useEffect(() => {
         const rs = []
         data.forEach((tran) => {
@@ -25,7 +25,7 @@ export default function TransactionList({ data, callbackFunc }) {
         setUser(rs)
         set_data(data)
         setPagination({ ...pagination, totalCount: data.length })
-    }, [])
+    }, [data])
 
     useEffect(() => {
         callbackFunc()
@@ -35,8 +35,7 @@ export default function TransactionList({ data, callbackFunc }) {
         const filterResult = data.filter((tran, index) => {
             return (
                 tran.transportCode.toLowerCase().indexOf(keyword.toLowerCase()) >= 0 ||
-                users[index].phone.toLowerCase().indexOf(keyword.toLowerCase()) >= 0 ||
-                users[index].name.toLowerCase().indexOf(keyword.toLowerCase()) >= 0
+                users[index].phone.toLowerCase().indexOf(keyword.toLowerCase()) >= 0
             )
         })
         console.log(filterResult)
@@ -82,6 +81,7 @@ export default function TransactionList({ data, callbackFunc }) {
                             fontWeight: '600',
                             color: '#476282',
                             padding: '3px 10px',
+                            marginLeft: '12px'
                         }}
                     >
                         Đến ngày
@@ -135,7 +135,7 @@ export default function TransactionList({ data, callbackFunc }) {
                                 handleFilter(e.target.value)
                             }}
                             type="text"
-                            placeholder="Nhập mã vận chuyển đề tìm kiếm..."
+                            placeholder="Nhập mã vận chuyển, số điện thoại..."
                         />
                         <i class="fa fa-search" aria-hidden="true"></i>
                     </Box>

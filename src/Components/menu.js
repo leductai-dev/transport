@@ -5,8 +5,8 @@ import { useHistory, withRouter } from 'react-router'
 import addNotification, { Notifications } from 'react-push-notification'
 import { app } from '../firebaseConfig'
 import { Button } from 'rebass'
-import {useDispatch,useSelector} from 'react-redux'
-import {expand} from '../Actions/Action_transactions'
+import { useDispatch, useSelector } from 'react-redux'
+import { expand } from '../Actions/Action_transactions'
 
 const menuLink = [
     {
@@ -69,7 +69,7 @@ const menuLink = [
 var Menulink = ({ pageName, to, activeOnlyWhenExact, img, isLast }) => {
     const history = useHistory()
     const dispatch = useDispatch()
-    const state = useSelector((state)=>state.expandMenu)
+    const state = useSelector((state) => state.expandMenu)
 
     return (
         <Route
@@ -80,7 +80,12 @@ var Menulink = ({ pageName, to, activeOnlyWhenExact, img, isLast }) => {
                 if (isLast) {
                     return (
                         <li className={`li-item cts-li $(active)`}>
-                            <Link  onClick={() => {dispatch(expand())}} className="a-item"></Link>
+                            <Link
+                                onClick={() => {
+                                    dispatch(expand())
+                                }}
+                                className="a-item"
+                            ></Link>
                             <img className="img-history" src={img} alt="icon_link" />
                             {state && <span className="span-text">{pageName}</span>}
                         </li>
@@ -101,31 +106,38 @@ var Menulink = ({ pageName, to, activeOnlyWhenExact, img, isLast }) => {
 function Menu() {
     const history = useHistory()
     const db_Transactions = app.database().ref().child(`/transactions`)
-    const state = useSelector((state)=>state.expandMenu)
+
+    const state = useSelector((state) => state.expandMenu)
 
     useEffect(() => {
         let isCan = false
         db_Transactions.on('child_added', (snap) => {
-            if (isCan) {
-                addNotification({
-                    title: 'title',
-                    subtitle: 'subtietlee',
-                    message: 'message',
-                    onClick: (e) => {
-                        window.focus()
-                        history.push(`/transaction/${snap.val().transactionId}`)
-                    },
-                    theme: 'red',
-                    duration: 10000,
-                    backgroundTop: 'green',
-                    backgroundBottom: 'darkgreen',
-                    colorTop: 'green',
-                    colorBottom: 'darkgreen', //optional, font color of bottom container.
-                    closeButton: 'Go away', //optional, text or html/jsx element for close text. Default: Close,
-                    native: true, //optional, makes the push notification a native OS notification
-                    icon: 'string', // optional, Native only. Sets an icon for the notification.
-                    vibrate: 1, // optional, Native only. Sets a vibration for the notification.
-                    silent: false, // optional, Native only. Makes the notification silent.
+            if (isCan && snap.val()) {
+                const db_Customer = app
+                    .database()
+                    .ref()
+                    .child(`/customers/${snap.val().customerId}`)
+                db_Customer.once('value', (snap2) => {
+                    addNotification({
+                        title: 'Yêu cầu vận chuyển!',
+                        subtitle: 'subtietlee',
+                        message: `Yêu cầu vận chuyển mới từ ${snap2.val().name}`,
+                        onClick: (e) => {
+                            window.focus()
+                            history.push(`/transaction/${snap.val().transactionId}`)
+                        },
+                        theme: 'red',
+                        duration: 10000,
+                        backgroundTop: 'green',
+                        backgroundBottom: 'darkgreen',
+                        colorTop: 'green',
+                        colorBottom: 'darkgreen', //optional, font color of bottom container.
+                        closeButton: 'Go away', //optional, text or html/jsx element for close text. Default: Close,
+                        native: true, //optional, makes the push notification a native OS notification
+                        icon: 'string', // optional, Native only. Sets an icon for the notification.
+                        vibrate: 1, // optional, Native only. Sets a vibration for the notification.
+                        silent: false, // optional, Native only. Makes the notification silent.
+                    })
                 })
             } else {
                 setTimeout(() => {
@@ -138,10 +150,22 @@ function Menu() {
     return (
         <>
             <Notifications />
-            <div style={{minWidth: '245px'}} className="h-100  customize-layout-left d-flex flex-column">
-                <div className=" div-logo " style={{minHeight: '100px'}}>
+            <div
+                style={{ minWidth: '245px' }}
+                className="h-100  customize-layout-left d-flex flex-column"
+            >
+                <div className=" div-logo " style={{ minHeight: '100px' }}>
                     <a className="navbar-brand" href="/">
-                    {state  ? <img src="/logon.png" alt="logo" className="img_log " /> : <img src="/png/userLocation.png" style={{width: '40px',marginTop: '10px', marginLeft: '6px'}} alt="logo" className="img_log" />}
+                        {state ? (
+                            <img src="/logon.png" alt="logo" className="img_log " />
+                        ) : (
+                            <img
+                                src="/png/userLocation.png"
+                                style={{ width: '40px', marginTop: '10px', marginLeft: '6px' }}
+                                alt="logo"
+                                className="img_log"
+                            />
+                        )}
                     </a>
                 </div>
                 <div className=" flex-grow-1 div-item">

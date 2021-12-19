@@ -42,13 +42,12 @@ export default function History() {
                         canceled.push(item)
                     }
                 })
-
-                setAll(Object.values(snap.val()))
-                setPending(pending)
-                setDriverPeding(driverPending)
-                setInProgress(inProgress)
-                setCompleted(completed)
-                setCanceled(canceled)
+                setAll(Object.values(snap.val()).sort((a,b)=> b.initialTime - a.initialTime))
+                setPending(pending.sort((a,b)=> b.initialTime - a.initialTime))
+                setDriverPeding(driverPending.sort((a,b)=> b.initialTime - a.initialTime))
+                setInProgress(inProgress.sort((a,b)=> b.initialTime - a.initialTime))
+                setCompleted(completed.sort((a,b)=> b.initialTime - a.initialTime))
+                setCanceled(canceled.sort((a,b)=> b.initialTime - a.initialTime))
             }
         })
     }, [])

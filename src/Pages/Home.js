@@ -62,7 +62,7 @@ export const Component = (props) => {
         const view = transactions_props.map((transaction, index) => {
                 const fromAdress =[transaction.shippingInfo.sender.lat, transaction.shippingInfo.sender.long]
                 const toAddress =[transaction.shippingInfo.receiver.lat, transaction.shippingInfo.receiver.long]
-                const currentLocation =[transaction.shippingInfo.driver.lat, transaction.shippingInfo.driver.long]
+                // const currentLocation =[transaction.shippingInfo.driver.lat, transaction.shippingInfo.driver.long]
                 return (
                    <React.Fragment key={index}>
                     <Marker eventHandlers={{ click: ()=>{setShowTransactionInfo(true)}}} key={index} icon={InitialIcon} position={fromAdress}>
@@ -85,7 +85,7 @@ export const Component = (props) => {
                             "Tooltip"
                         </Tooltip>
                     </Marker>
-                    <Marker onClick={()=>{setShowTransactionInfo(true)}} key={index} icon={DriverIcon} position={currentLocation}>
+                    {/* <Marker onClick={()=>{setShowTransactionInfo(true)}} key={index} icon={DriverIcon} position={currentLocation}>
                         <Tooltip
                             direction="top"
                             maxWidth={10}
@@ -95,7 +95,7 @@ export const Component = (props) => {
                         >
                             "Tooltip"
                         </Tooltip>
-                    </Marker>
+                    </Marker> */}
                     </React.Fragment>
                 );
         });

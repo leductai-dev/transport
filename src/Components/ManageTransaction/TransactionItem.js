@@ -62,7 +62,7 @@ export default function TransactionItem({ data }) {
                     sx={{ display: 'table-cell', textAlign: 'center', color: '#476282' }}
                 >
                     <Button
-                        sx={{   background: '#476282',
+                        sx={{   background: '#477b9e',
                         color: 'white', }}
                         onClick={() => {
                             history.push(`/transaction/${transactionId}`)

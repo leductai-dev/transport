@@ -5,7 +5,7 @@ import ModalTransaction from './ModalTransactionInfo'
 import { useHistory } from 'react-router-dom'
 import ModalDriverDetail from './ModalDriverDetail'
 
-export default function DriverItem({driver, index, handle}) {
+export default function DriverItem({driver, index, handle,transaction}) {
     const [dataModal, setDataModal] = useState(null);
     const [vehicle, setVehicle] = useState(null);
 
@@ -13,13 +13,11 @@ export default function DriverItem({driver, index, handle}) {
     useEffect(() => {
         const vehicle_db = app.database().ref().child(`/vehicles/${driver.vehicleId}`)
         vehicle_db.once('value', (snap) => {
-            console.log(driver.name)
-            console.log(snap.val())
             if (snap.val()) {
                 setVehicle(snap.val())
             }
         })
-    }, [])
+    }, [driver])
     return (
         <>
             <Box
@@ -88,9 +86,9 @@ export default function DriverItem({driver, index, handle}) {
                     }}
                 >
                     <Button
-                    className='bg-primary'
+                    className=''
                         sx={{
-                            background: 'cornflowerblue',
+                            background: '#2e6191',
                         }}
                         onClick={() => {
                             setDataModal(driver)
@@ -99,9 +97,9 @@ export default function DriverItem({driver, index, handle}) {
                         <i class="fa fa-eye" aria-hidden="true"></i> Lịch trình
                     </Button>
                     <Button
-                    className='bg-primary ml-2'
+                    className=' ml-2'
                         sx={{
-                            background: 'cornflowerblue',
+                            background: '#2e6191',
                         }}
                         onClick={() => {
                             handle(driver,vehicle)
@@ -111,7 +109,7 @@ export default function DriverItem({driver, index, handle}) {
                     </Button>
                 </Box>
             </Box>
-            {dataModal && <ModalDriverDetail transaction={dataModal} onClose={()=>{setDataModal(null)}}/>}
+            {dataModal && <ModalDriverDetail transaction={transaction} vehicle={vehicle} driver={dataModal} onClose={()=>{setDataModal(null)}}/>}
 
         </>
     )

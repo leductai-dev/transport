@@ -5,9 +5,11 @@ import ImageUploading from 'react-images-uploading'
 import { app } from '../../firebaseConfig'
 import { v4 as uuidv4 } from 'uuid'
 import uploadPhoto from '../../Utils/UploadImg'
-
 export default function ModalAddMember({ close, vehicles, data }) {
     const [images, setImages] = React.useState([])
+    const [lat, setLat] = React.useState('')
+    const [long, setLong] = React.useState('')
+
     const [formData, setFormData] = React.useState({
         name: data?.name || '',
         phone: data?.phone || '',
@@ -18,30 +20,42 @@ export default function ModalAddMember({ close, vehicles, data }) {
         status: true,
         image: data?.image || '',
     })
-
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                setLat(position.coords.latitude)
+                setLong(position.coords.longitude)
+            })
+        } else {
+            alert('Allow location!')
+        }
+    }, [])
     const handleSubmit = () => {
         const { name, phone, sex, joinDate, birthDay, vehicleId } = formData
         try {
             const db_Vehicles_New = app.database().ref().child(`/vehicles/${formData.vehicleId}`)
 
-            const newVehicle = vehicles.filter(vehicle => vehicle.vehicleId ===formData.vehicleId)[0]
+            const newVehicle = vehicles.filter(
+                (vehicle) => vehicle.vehicleId === formData.vehicleId
+            )[0]
             if (data) {
                 if (!name || !phone || !joinDate || !birthDay || !vehicleId) {
                     alert('Vui lòng nhập đầy đủ thông tin!')
                     return
                 }
                 const db_Vehicles_Old = app.database().ref().child(`/vehicles/${data.vehicleId}`)
-                const oldVehicle = vehicles.filter(vehicle => vehicle.vehicleId ===data.vehicleId)[0]
-    
+                const oldVehicle = vehicles.filter(
+                    (vehicle) => vehicle.vehicleId === data.vehicleId
+                )[0]
+
                 const db_Drivers = app.database().ref().child(`/drivers/${data.driverId}`)
-              
 
                 if (images[0]) {
                     uploadPhoto(images[0].data_url).then((res) => {
                         const _data = { ...data, ...formData, image: res.message }
                         db_Drivers.update(_data)
-                        db_Vehicles_New.update({...newVehicle, using: newVehicle.using + 1})
-                        db_Vehicles_Old.update({...oldVehicle, using: oldVehicle.using - 1})
+                        db_Vehicles_New.update({ ...newVehicle, using: newVehicle.using + 1 })
+                        db_Vehicles_Old.update({ ...oldVehicle, using: oldVehicle.using - 1 })
                         close()
                         alert('Cập nhật thành công!')
                     })
@@ -51,8 +65,8 @@ export default function ModalAddMember({ close, vehicles, data }) {
                 const _data = { ...data, ...formData }
                 db_Drivers.update(_data).then(() => {
                     close()
-                    db_Vehicles_New.update({...newVehicle, using: newVehicle.using + 1})
-                        db_Vehicles_Old.update({...oldVehicle, using: oldVehicle.using - 1})
+                    db_Vehicles_New.update({ ...newVehicle, using: newVehicle.using + 1 })
+                    db_Vehicles_Old.update({ ...oldVehicle, using: oldVehicle.using - 1 })
                     alert('Cập nhật thành công!')
                 })
                 return
@@ -66,10 +80,20 @@ export default function ModalAddMember({ close, vehicles, data }) {
                 const driverId = uuidv4()
                 const db_Drivers = app.database().ref().child(`/drivers/${driverId}`)
                 const code = Math.floor(Math.random() * 899999 + 100000)
-                const data = { ...formData, image: res.message, driverId, code }
-                db_Drivers.set(data).then(() => {
+                const filterVehicle = vehicles.filter(
+                    (vehicle) => vehicle.vehicleId === formData.vehicleId
+                )[0]
+                const _data = { ...formData, image: res.message, driverId, code,vehicleStatus:{
+                    lat : lat,
+                    long: long,
+                    payload: filterVehicle.payload,
+                    height: filterVehicle.height,
+                    length: filterVehicle.length,
+                    width: filterVehicle.width,
+                }  }
+                db_Drivers.set(_data).then(() => {
                     console.log(newVehicle)
-                    db_Vehicles_New.update({...newVehicle, using: newVehicle.using + 1})
+                    db_Vehicles_New.update({ ...newVehicle, using: newVehicle.using + 1 })
                     close()
                     alert('Thêm thành công!')
                 })
@@ -109,7 +133,7 @@ export default function ModalAddMember({ close, vehicles, data }) {
                     sx={{
                         zIndex: 1,
                         width: 'fit-content',
-                        color: '#1b3a57',
+                        color: '#476282',
                         p: '10px',
                         fontSize: '22px',
                         fontWeight: 'bold',
@@ -119,7 +143,7 @@ export default function ModalAddMember({ close, vehicles, data }) {
                     {data ? 'Chỉnh sửa thông tin' : 'Thêm thành viên'}
                 </Text>
                 <Button
-                    sx={{ backgroundColor: 'blue' }}
+                    sx={{ backgroundColor: '#476282' }}
                     onClick={() => {
                         close()
                     }}
@@ -328,7 +352,11 @@ export default function ModalAddMember({ close, vehicles, data }) {
                         <option value="">Chọn xe</option>
                         {vehicles ? (
                             vehicles.map((vehicle, index) => (
-                                <option disabled={vehicle.using === vehicle.totalCount} key={index} value={vehicle.vehicleId}>
+                                <option
+                                    disabled={vehicle.using === vehicle.totalCount}
+                                    key={index}
+                                    value={vehicle.vehicleId}
+                                >
                                     {vehicle.name}
                                 </option>
                             ))
@@ -337,11 +365,28 @@ export default function ModalAddMember({ close, vehicles, data }) {
                         )}
                     </Select>
                 </Box>
+                {data && <Box mb={1}>
+                    <Label htmlFor="name">Mã đăng nhập</Label>
+                    <Input
+                                sx={{
+                                    outline: 'none',
+                                    width: '100%',
+                                    border: '1px solid #e3e3e3',
+                                    background: '#cdcdcd14',
+                                    color: '#476282',
+                                    fontWeight: 600
+                                }}
+                                defaultValue={data?.code}
+                                name="phone"
+                                type="text"
+                                onChange={handleChange}
+                            />
+                </Box>}
 
                 <Box mt={4}>
                     <Button
                         sx={{
-                            background: 'blue',
+                            background: '#476282',
                             margin: ' 10px auto',
                             color: 'white',
                             padding: '10px 50px',
