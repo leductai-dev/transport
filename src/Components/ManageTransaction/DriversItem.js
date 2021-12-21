@@ -65,7 +65,7 @@ export default function DriverItem({driver, index, handle,transaction}) {
                         color: '#476282',
                     }}
                 >
-                    4 tấn
+                    {vehicle?.payload} (Kg)
                 </Box>
                 <Box
                     py={'5px'}
@@ -75,7 +75,7 @@ export default function DriverItem({driver, index, handle,transaction}) {
                         color: '#476282',
                     }}
                 >
-                    2.5m
+                    {`${vehicle?.length} x ${vehicle?.width} x ${vehicle?.height} (m)`}
                 </Box>
                 <Box
                     py={'5px'}

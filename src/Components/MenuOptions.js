@@ -73,11 +73,11 @@ export const MenuOption = ({ transactions }) => {
                     </Button>
                 </Box>
                 <Box sx={{}}>
-                    {transactions && (
+                    {transactions?.length > 0 && (
                         <Button
                         onClick={() => {
                             dispatch(
-                                setDataTransaction(Object.values(transactions))
+                                setDataTransaction(transactions)
                             );
                         }}
                         sx={{
@@ -93,8 +93,8 @@ export const MenuOption = ({ transactions }) => {
                         View all
                     </Button>
                     )}
-                    {transactions &&
-                        Object.values(transactions).map(
+                    {transactions?.length > 0 &&
+                        transactions.map(
                             (transaction, index) => (
                                 <Button
                                     key={index}

@@ -54,8 +54,10 @@ export default function ModalAddMember({ close, vehicles, data }) {
                     uploadPhoto(images[0].data_url).then((res) => {
                         const _data = { ...data, ...formData, image: res.message }
                         db_Drivers.update(_data)
-                        db_Vehicles_New.update({ ...newVehicle, using: newVehicle.using + 1 })
-                        db_Vehicles_Old.update({ ...oldVehicle, using: oldVehicle.using - 1 })
+                        if(formData.vehicleId !== data.vehicleId){
+                            db_Vehicles_New.update({ ...newVehicle, using: newVehicle.using + 1 })
+                            db_Vehicles_Old.update({ ...oldVehicle, using: oldVehicle.using - 1 })
+                        }
                         close()
                         alert('Cập nhật thành công!')
                     })
@@ -65,8 +67,10 @@ export default function ModalAddMember({ close, vehicles, data }) {
                 const _data = { ...data, ...formData }
                 db_Drivers.update(_data).then(() => {
                     close()
+                    if(formData.vehicleId !== data.vehicleId){
                     db_Vehicles_New.update({ ...newVehicle, using: newVehicle.using + 1 })
                     db_Vehicles_Old.update({ ...oldVehicle, using: oldVehicle.using - 1 })
+                }
                     alert('Cập nhật thành công!')
                 })
                 return

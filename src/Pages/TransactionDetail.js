@@ -81,14 +81,14 @@ export default function TransactionDetail() {
                         setCustomer(_snap.val())
                         setTransaction(snap.val())
                     })
-                    if(snap.val().driverId){
+                    if (snap.val().driverId) {
                         const driver_db = app
-                        .database()
-                        .ref()
-                        .child(`/drivers/${snap.val().driverId}`)
+                            .database()
+                            .ref()
+                            .child(`/drivers/${snap.val().driverId}`)
                         driver_db.once('value', (_snap2) => {
-                        setDriverInProgress(_snap2.val())
-                    })
+                            setDriverInProgress(_snap2.val())
+                        })
                     }
                 } else {
                     alert('Không tìm thấy giao dịch!')
@@ -103,7 +103,6 @@ export default function TransactionDetail() {
             })
         }
     }, [param.id])
-   
 
     const handleChangeView = (e) => {
         console.log(drivers)
@@ -127,34 +126,31 @@ export default function TransactionDetail() {
 
     const findAppropriate = () => {
         if (!drivers) return
-        const newDrivers = drivers.map((driver, index) => {
-            const db_Transactions = app
-                .database()
-                .ref()
-                .child(`/transactions`)
-                .orderByChild('driverId')
-                .equalTo(driver.driverId)
-                let diffrenceDistance =0
-            db_Transactions.once('value', (snap) => {
-                let transactionInProgressList = []
-                let oldDistance = 0
-                if (snap.val()) {
-                    transactionInProgressList = Object.values(snap.val()).filter(
-                        (item) => item.status === 'inProgress'
-                    )
-                    oldDistance = totalDistance(transactionInProgressList, driver)[1]
-                }
-                transactionInProgressList.push(transaction)
-                const newDistance = totalDistance(transactionInProgressList, driver)[1]
-                console.log('driver :' + index)
-                console.log(oldDistance)
-                console.log(newDistance)
-                console.log('-----------------------------')
-                diffrenceDistance =  newDistance - oldDistance
+        const newDrivers = drivers
+            .map((driver, index) => {
+                const db_Transactions = app
+                    .database()
+                    .ref()
+                    .child(`/transactions`)
+                    .orderByChild('driverId')
+                    .equalTo(driver.driverId)
+                let diffrenceDistance = 0
+                db_Transactions.once('value', (snap) => {
+                    let transactionInProgressList = []
+                    let oldDistance = 0
+                    if (snap.val()) {
+                        transactionInProgressList = Object.values(snap.val()).filter(
+                            (item) => item.status === 'inProgress'
+                        )
+                        oldDistance = totalDistance(transactionInProgressList, driver)[1]
+                    }
+                    transactionInProgressList.push(transaction)
+                    const newDistance = totalDistance(transactionInProgressList, driver)[1]
+                    diffrenceDistance = newDistance - oldDistance
+                })
+                return { ...driver, diffrenceDistance }
             })
-            return {...driver, diffrenceDistance}
-        }).sort((a,b)=> a.diffrenceDistance - b.diffrenceDistance)
-        console.log(newDrivers)
+            .sort((a, b) => a.diffrenceDistance - b.diffrenceDistance)
         setDriversView(newDrivers)
         setSuggestDriverList(newDrivers)
         setLoading(false)
@@ -263,28 +259,28 @@ export default function TransactionDetail() {
     }
     const handleCancelCustomer = () => {
         // eslint-disable-next-line no-restricted-globals
-        if (confirm("Xác nhận hủy?")) {
+        if (confirm('Xác nhận hủy?')) {
             const transaction_db = app
-            .database()
-            .ref()
-            .child(`/transactions/${transaction.transactionId}`)
-        const data = { ...transaction, status: 'canceled' }
-        transaction_db.update(data)
-        history.push('/transactions')
-        alert('Hủy thành yêu cầu chuyển hàng thành công!')
+                .database()
+                .ref()
+                .child(`/transactions/${transaction.transactionId}`)
+            const data = { ...transaction, status: 'canceled' }
+            transaction_db.update(data)
+            history.push('/transactions')
+            alert('Hủy thành yêu cầu chuyển hàng thành công!')
         }
     }
     const handleCancelDriver = () => {
         // eslint-disable-next-line no-restricted-globals
-        if (confirm("Xác nhận hủy?")) {
-        const transaction_db = app
-            .database()
-            .ref()
-            .child(`/transactions/${transaction.transactionId}`)
-        const data = { ...transaction, status: 'pending' } 
-        transaction_db.update(data)
-        history.push('/transactions')
-        alert('Hủy yêu cầu thành công!')
+        if (confirm('Xác nhận hủy?')) {
+            const transaction_db = app
+                .database()
+                .ref()
+                .child(`/transactions/${transaction.transactionId}`)
+            const data = { ...transaction, status: 'pending' }
+            transaction_db.update(data)
+            history.push('/transactions')
+            alert('Hủy yêu cầu thành công!')
         }
     }
 
@@ -294,12 +290,12 @@ export default function TransactionDetail() {
             return
         }
         // eslint-disable-next-line no-restricted-globals
-        if(!confirm("Xác nhận chuyển giao")) return
+        if (!confirm('Xác nhận chuyển giao')) return
         const transaction_db = app
             .database()
             .ref()
             .child(`/transactions/${transaction.transactionId}`)
-        const data = { ...transaction, driverId: chosenDriver.driverId, status: 'driverPending' } 
+        const data = { ...transaction, driverId: chosenDriver.driverId, status: 'driverPending' }
         transaction_db.update(data)
 
         const EXPO_SERVER_URL = 'https://exp.host/--/api/v2/push/send'
@@ -419,18 +415,18 @@ export default function TransactionDetail() {
                                                 lineHeight: '30px',
                                             }}
                                         >
-                                            <Text sx={{color: '#363636'}}>
+                                            <Text sx={{ color: '#363636' }}>
                                                 <i class="fa fa-phone mr-2 " aria-hidden="true"></i>{' '}
                                                 Phone: {customer.phone}
                                             </Text>
-                                            <Text sx={{color: '#363636'}}>
+                                            <Text sx={{ color: '#363636' }}>
                                                 <i
                                                     class="fa fa-envelope mr-2"
                                                     aria-hidden="true"
                                                 ></i>
                                                 Email: {customer.email}
-                                            </Text >
-                                            <Text sx={{color: '#363636'}}> 
+                                            </Text>
+                                            <Text sx={{ color: '#363636' }}>
                                                 <i
                                                     class="fa fa-calendar mr-2"
                                                     aria-hidden="true"
@@ -523,7 +519,7 @@ export default function TransactionDetail() {
                                                         Địa chỉ lấy hàng: {sender.address}
                                                     </Text>
                                                 </Box>
-                                                <Box  sx={{ width: '50%', paddingRight: '20px' }}>
+                                                <Box sx={{ width: '50%', paddingRight: '20px' }}>
                                                     <Text
                                                         as="p"
                                                         sx={{
@@ -572,7 +568,10 @@ export default function TransactionDetail() {
                                                         Địa chỉ lấy hàng: {receiver.address}
                                                     </Text>
                                                 </Box>
-                                                <Box mt={2} sx={{ width: '45%', paddingRight: '10px' }}>
+                                                <Box
+                                                    mt={2}
+                                                    sx={{ width: '45%', paddingRight: '10px' }}
+                                                >
                                                     <Text
                                                         as="p"
                                                         sx={{
@@ -664,71 +663,96 @@ export default function TransactionDetail() {
                                                         Ghi chú: {note}
                                                     </Text>
                                                 </Box>
-                                                {driverInProgress && transaction?.status === 'inProgress' && <Box mt={2} sx={{ width: '50%', paddingRight: '10px' }}>
-                                                    <Text
-                                                        as="p"
-                                                        sx={{
-                                                            zIndex: 1,
-                                                            width: 'fit-content',
-                                                            color: '#1b3a57',
-                                                            pr: '10px',
-                                                            fontSize: '20px',
-                                                            fontWeight: 'bold',
-                                                            marginBottom: '15px',
-                                                        }}
-                                                    >
-                                                        Thông tin vận chuyển
-                                                    </Text>
-                                                    <Text
-                                                        as="p"
-                                                        sx={{
-                                                            fontSize: '16px',
-                                                            color: '#363636',
-                                                            fontWeight: '500',
-                                                            marginBottom: '10px',
-                                                        }}
-                                                    >
-                                                    Người vận chuyển: {driverInProgress.name}
-                                    
+                                                {driverInProgress &&
+                                                    transaction?.status === 'inProgress' && (
+                                                        <Box
+                                                            mt={2}
+                                                            sx={{
+                                                                width: '50%',
+                                                                paddingRight: '10px',
+                                                            }}
+                                                        >
+                                                            <Text
+                                                                as="p"
+                                                                sx={{
+                                                                    zIndex: 1,
+                                                                    width: 'fit-content',
+                                                                    color: '#1b3a57',
+                                                                    pr: '10px',
+                                                                    fontSize: '20px',
+                                                                    fontWeight: 'bold',
+                                                                    marginBottom: '15px',
+                                                                }}
+                                                            >
+                                                                Thông tin vận chuyển
+                                                            </Text>
+                                                            <Text
+                                                                as="p"
+                                                                sx={{
+                                                                    fontSize: '16px',
+                                                                    color: '#363636',
+                                                                    fontWeight: '500',
+                                                                    marginBottom: '10px',
+                                                                }}
+                                                            >
+                                                                Người vận chuyển:{' '}
+                                                                {driverInProgress.name}
+                                                            </Text>
+                                                            <Text
+                                                                as="p"
+                                                                sx={{
+                                                                    fontSize: '16px',
+                                                                    color: '#363636',
+                                                                    fontWeight: '500',
+                                                                    marginBottom: '10px',
+                                                                }}
+                                                            >
+                                                                Số điện thoại:{' '}
+                                                                {driverInProgress.phone}
+                                                            </Text>
+                                                            {transaction?.arrivalTime && (
+                                                                <Text
+                                                                    as="p"
+                                                                    sx={{
+                                                                        fontSize: '16px',
+                                                                        color: '#363636',
+                                                                        fontWeight: '500',
+                                                                        marginBottom: '10px',
+                                                                    }}
+                                                                >
+                                                                    Thời gian lấy hàng dự kiến:{' '}
+                                                                    {new Date(
+                                                                        transaction.arrivalTime
+                                                                    ).toLocaleTimeString()}{' '}
+                                                                    {'-'}{' '}
+                                                                    {convertDate(
+                                                                        transaction.arrivalTime
+                                                                    )}
+                                                                </Text>
+                                                            )}
 
-                                                    </Text>
-                                                    <Text
-                                                        as="p"
-                                                        sx={{
-                                                            fontSize: '16px',
-                                                            color: '#363636',
-                                                            fontWeight: '500',
-                                                            marginBottom: '10px',
-                                                        }}
-                                                    >
-                                                        Số điện thoại: {driverInProgress.phone}
-                                 
-                                                    </Text>
-                                                    <Text
-                                                        as="p"
-                                                        sx={{
-                                                            fontSize: '16px',
-                                                            color: '#363636',
-                                                            fontWeight: '500',
-                                                            marginBottom: '10px',
-                                                        }}
-                                                    >
-                                                          Thời gian lấy hàng dự kiến: 8 giờ 30. Ngày
-                                  
-                                                    </Text>
-                                                    <Text
-                                                        as="p"
-                                                        sx={{
-                                                            fontSize: '16px',
-                                                            color: '#363636',
-                                                            fontWeight: '500',
-                                                            marginBottom: '10px',
-                                                        }}
-                                                    >
-                                                          Thời gian nhận hàng dự kiến: 8 giờ 30. Ngày
-                                                    </Text>
-                                                   
-                                                </Box>}
+                                                            {transaction?.deliveryTime && (
+                                                                <Text
+                                                                    as="p"
+                                                                    sx={{
+                                                                        fontSize: '16px',
+                                                                        color: '#363636',
+                                                                        fontWeight: '500',
+                                                                        marginBottom: '10px',
+                                                                    }}
+                                                                >
+                                                                    Thời gian giao hàng dự kiến:{' '}
+                                                                    {new Date(
+                                                                        transaction.deliveryTime
+                                                                    ).toLocaleTimeString()}{' '}
+                                                                    {'-'}{' '}
+                                                                    {convertDate(
+                                                                        transaction.deliveryTime
+                                                                    )}
+                                                                </Text>
+                                                            )}
+                                                        </Box>
+                                                    )}
                                             </Box>
                                         </Box>
                                     </Box>
@@ -871,7 +895,7 @@ export default function TransactionDetail() {
                                         </MapContainer>
                                     </Box>
 
-                                    {transaction.status === 'pending'  ? (
+                                    {transaction.status === 'pending' ? (
                                         <Box>
                                             <Text
                                                 as="p"
@@ -923,7 +947,13 @@ export default function TransactionDetail() {
                                                         <option value="2">Xe phù hợp</option>
                                                     </Select>
                                                 </Box>
-                                                <Box sx={{marginLeft: '20px', display: 'flex', alignItems: 'center' }}>
+                                                <Box
+                                                    sx={{
+                                                        marginLeft: '20px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                    }}
+                                                >
                                                     <Text
                                                         sx={{
                                                             fontWeight: '600',
@@ -1059,7 +1089,7 @@ export default function TransactionDetail() {
                                                             textAlign: 'center',
                                                         }}
                                                     >
-                                                        Trọng tải(Kg)
+                                                        Trọng tải
                                                     </Box>
                                                     <Box
                                                         py={'10px'}
@@ -1070,7 +1100,7 @@ export default function TransactionDetail() {
                                                             textAlign: 'center',
                                                         }}
                                                     >
-                                                        Thùng chứa(m3)
+                                                        Kích thước thùng
                                                     </Box>
                                                     <Box
                                                         py={'10px'}
@@ -1155,7 +1185,9 @@ export default function TransactionDetail() {
                                                             marginRight: 'auto',
                                                             fontWeight: '600',
                                                         }}
-                                                    >{chosenVehicle.name}</Text>
+                                                    >
+                                                        {chosenVehicle.name}
+                                                    </Text>
                                                     do tài xế{' '}
                                                     <Text
                                                         as="span"
@@ -1171,7 +1203,8 @@ export default function TransactionDetail() {
                                                         }}
                                                     >
                                                         {chosenDriver.name}
-                                                    </Text>{'điều khiển.'}
+                                                    </Text>
+                                                    {'điều khiển.'}
                                                 </Text>
                                             )}
                                             <Button
@@ -1209,7 +1242,20 @@ export default function TransactionDetail() {
                                                 paddingBottom: '200px',
                                             }}
                                         >
-                                             <Text
+                                            <Text
+                                                as="span"
+                                                sx={{
+                                                    zIndex: 1,
+                                                    color: '#1b3a57',
+                                                    pr: '10px',
+                                                    fontSize: '15px',
+                                                    marginTop: '10px',
+                                                    justifySelf: 'flex-start',
+                                                    marginRight: 'auto',
+                                                }}
+                                            >
+                                                *Đã gửi yêu cầu vận chuyển cho tài xế{' '}
+                                                <Text
                                                     as="span"
                                                     sx={{
                                                         zIndex: 1,
@@ -1219,23 +1265,12 @@ export default function TransactionDetail() {
                                                         marginTop: '10px',
                                                         justifySelf: 'flex-start',
                                                         marginRight: 'auto',
+                                                        fontWeight: '600',
                                                     }}
                                                 >
-                                                    *Đã gửi yêu cầu vận chuyển cho tài xế{' '}
-                                                    <Text
-                                                        as="span"
-                                                        sx={{
-                                                            zIndex: 1,
-                                                            color: '#1b3a57',
-                                                            pr: '10px',
-                                                            fontSize: '15px',
-                                                            marginTop: '10px',
-                                                            justifySelf: 'flex-start',
-                                                            marginRight: 'auto',
-                                                            fontWeight: '600',
-                                                        }}
-                                                    >{driverInProgress.name}</Text>
+                                                    {driverInProgress.name}
                                                 </Text>
+                                            </Text>
                                             <Button
                                                 className="bg-warning ml-auto"
                                                 mr={2}

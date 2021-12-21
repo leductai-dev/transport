@@ -21,12 +21,26 @@ export default function VehicleItem({ data,vehicles }) {
     }, [vehicleId])
 
     const handleRemove = ()=>{
+    const db_Transactions = app
+        .database()
+        .ref()
+        .child(`/transactions`)
+        .orderByChild('driverId')
+        .equalTo(data.driverId)
+
+    db_Transactions.once('value', (snap) => {
+        if(snap.val()){
+            alert("Xóa thất bại. Tài xế có đơn hàng đang vận chuyển. Vui lòng thử lại khi tài xế đã hoàn tất các đơn hàng!")
+            return
+        }
         const db_Drivers = app.database().ref().child(`/drivers/${data.driverId}`)
         if(window.confirm("Xác nhận xóa?")){
             db_Drivers.remove()
             const _data = {...vehicle, using: vehicle.using - 1 }
             db_Vehicle.update(_data)
         }   
+    })
+       
     }
     return (
         <>

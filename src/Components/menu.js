@@ -33,7 +33,7 @@ const menuLink = [
         namePage: constant.ManagerName,
         to: '/manage-vehicle',
         exact: false,
-        img: constant.ManagerImg,
+        img: constant.VehicleImg,
     },
     {
         namePage: 'Quản lý thành viên',
@@ -161,6 +161,7 @@ function Menu() {
                         ) : (
                             <img
                                 src="/png/userLocation.png"
+                                width="40px"
                                 style={{ width: '40px', marginTop: '10px', marginLeft: '6px' }}
                                 alt="logo"
                                 className="img_log"

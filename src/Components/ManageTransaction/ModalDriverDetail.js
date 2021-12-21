@@ -12,7 +12,7 @@ import L from 'leaflet'
 import convertDate from '../../Utils/ConvertDate'
 
 const DestinationIcon = new L.Icon({
-    iconUrl: '/images/destination.png',
+    iconUrl: '/png/destination.png',
     iconSize: [32, 32],
     iconAnchor: [17, 46],
     popupAnchor: [0, -46],
@@ -24,7 +24,7 @@ const DriverIcon = new L.Icon({
     popupAnchor: [0, -46],
 })
 const InitialIcon = new L.Icon({
-    iconUrl: '/images/userLocation.png',
+    iconUrl: '/png/userLocation.png',
     iconSize: [32, 32],
     iconAnchor: [17, 46],
     popupAnchor: [0, -46],
@@ -33,17 +33,9 @@ const InitialIcon = new L.Icon({
 const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
     const [center, setCenter] = useState([16.060392, 108.211847])
     const [timelineData, setTimeLineData] = useState(null)
+    const [open, setOpen] = useState(false)
+    const [suggestRoutes, setSuggestRoutes] = useState(null)
 
-    // console.log(transaction);
-    // const { initialTime, note, shippingInfo, transportCode } = transaction;
-    // const { height, weight, width, length, imageUrl, productName } =
-    //     shippingInfo.productInfo;
-    // const { receiver, sender } = shippingInfo;
-
-    // const fromAdress =[transaction.shippingInfo.sender.lat, transaction.shippingInfo.sender.long]
-    // const toAddress =[transaction.shippingInfo.receiver.lat, transaction.shippingInfo.receiver.long]
-    // const currentLocation =[transaction.shippingInfo.driver.lat, transaction.shippingInfo.driver.long]
-    const history = useHistory()
     const toRad = (Value) => {
         return (Value * Math.PI) / 180
     }
@@ -61,10 +53,17 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
         var distance = R * c
         return distance
     }
+    const handleShowHide = (time) => {
+        const newTimeLine = timelineData.map((timeline) => {
+            if (timeline.time === time) {
+                return { ...timeline, isShow: !timeline.isShow }
+            }
+            return timeline
+        })
+
+        setTimeLineData(newTimeLine)
+    }
     useEffect(() => {
-        console.log(driver)
-        console.log(vehicle)
-        console.log(transaction)
         const db_Transactions = app
             .database()
             .ref()
@@ -84,17 +83,18 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                     separatee.push(item1, item2)
                 }
                 const refresh = separatee.map((item) => {
-                    if (
-                        item.arrivalTime &&
-                        new Date(item.arrivalTime).getTime() < new Date().getTime()
-                    ) {
+                    if (item.arrivalTime) {
                         return {
                             ...item,
                             time: item.deliveryTime || item.arrivalTime,
-                            isOver: true,
+                            location: item.shippingInfo.receiver,
                         }
                     }
-                    return { ...item, time: item.deliveryTime || item.arrivalTime, isOver: false }
+                    return {
+                        ...item,
+                        time: item.deliveryTime || item.arrivalTime,
+                        location: item.shippingInfo.sender,
+                    }
                 })
                 refresh.sort((a, b) => {
                     return a.time - b.time
@@ -105,6 +105,11 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                     let beforeLong
                     let currentLat
                     let currentLong
+                    let payload = 0
+                    let width = 0
+                    let length = 0
+                    let height = 0
+
                     const arrivalLat = transaction.shippingInfo.sender.lat
                     const arrivalLong = transaction.shippingInfo.sender.long
                     const deliveryLat = transaction.shippingInfo.receiver.lat
@@ -127,9 +132,32 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                         beforeLat = refresh[i - 1].shippingInfo.receiver.lat
                         beforeLong = refresh[i - 1].shippingInfo.receiver.long
                     }
+                    if (refresh[i - 1] && refresh[i].arrivalTime) {
+                        width = calDistance[i - 1].width + refresh[i].shippingInfo.productInfo.width
+                        length =
+                            calDistance[i - 1].length + refresh[i].shippingInfo.productInfo.length
+                        height =
+                            calDistance[i - 1].height + refresh[i].shippingInfo.productInfo.height
+                        payload =
+                            calDistance[i - 1].payload + refresh[i].shippingInfo.productInfo.weight
+                    }
+                    if (refresh[i - 1] && refresh[i].deliveryTime) {
+                        width = calDistance[i - 1].width - refresh[i].shippingInfo.productInfo.width
+                        length =
+                            calDistance[i - 1].length - refresh[i].shippingInfo.productInfo.length
+                        height =
+                            calDistance[i - 1].height - refresh[i].shippingInfo.productInfo.height
+                        payload =
+                            calDistance[i - 1].payload - refresh[i].shippingInfo.productInfo.weight
+                    }
+
                     if (i === 0) {
                         beforeLat = driver.vehicleStatus.lat
                         beforeLong = driver.vehicleStatus.long
+                        width = refresh[i].shippingInfo.productInfo.width
+                        length = refresh[i].shippingInfo.productInfo.length
+                        height = refresh[i].shippingInfo.productInfo.height
+                        payload = refresh[i].shippingInfo.productInfo.weight
                     }
                     const currentVersusBefore = cacurlatorDistance(
                         beforeLat,
@@ -151,23 +179,175 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                     )
                     const refreshItem = {
                         ...refresh[i],
+                        width,
+                        length,
+                        height,
+                        payload,
                         currentVersusBefore: Math.round(currentVersusBefore * 10) / 10,
                         currentVersusBeforeTime: `${currentVersusBefore / 60}`,
                         currentVersusArrival: Math.round(currentVersusArrival * 10) / 10,
                         currentVersusArrivalTime: `${currentVersusArrival / 60}`,
                         currentVersusDelivery: Math.round(currentVersusDelivery * 10) / 10,
                         currentVersusDeliveryTime: `${currentVersusDelivery / 60}`,
+                        isShow: false,
                     }
                     calDistance.push(refreshItem)
                 }
-                console.log(calDistance)
                 setTimeLineData(calDistance)
             }
         })
     }, [])
 
     const handleSendRequest = async () => {}
+    useEffect(() => {
+        findAppropriate()
+    }, [])
+    const findAppropriate = () => {
+        if (!driver) return
 
+        const db_Transactions = app
+            .database()
+            .ref()
+            .child(`/transactions`)
+            .orderByChild('driverId')
+            .equalTo(driver.driverId)
+        db_Transactions.once('value', (snap) => {
+            let transactionInProgressList = []
+            if (snap.val()) {
+                transactionInProgressList = Object.values(snap.val()).filter(
+                    (item) => item.status === 'inProgress'
+                )
+                transactionInProgressList.push(transaction)
+                const distanceReturn = totalDistance(transactionInProgressList, driver)
+                const distance = distanceReturn[1]
+                const path = 'Driver' + distanceReturn[0]
+                const transferPath = []
+                const b = path.split('---')
+                console.log(b)
+                for (let i = 0; i < b.length; i += 2) {
+                    if (i === 0) continue
+                    transferPath.push({ distance: b[i - 1], point: b[i] })
+                }
+                const transferDistance = []
+                for (let i = 0; i < transferPath.length; i++) {
+                    if (transferPath[i + 1]) {
+                        const distance =
+                            Number(transferPath[i].distance) - Number(transferPath[i + 1].distance)
+                        transferDistance.push({ distance, point: transferPath[i].point })
+                    } else {
+                        transferDistance.push({
+                            distance: Number(transferPath[i].distance),
+                            point: transferPath[i].point,
+                        })
+                    }
+                }
+                const transferPoint = transferDistance.map((item) => {
+                    if (item.point) {
+                        return { ...item, point: JSON.parse(item.point) }
+                    }
+                })
+                setSuggestRoutes(transferPoint)
+                console.log('transferPoint')
+                console.log(transferPoint)
+            }
+        })
+    }
+
+    const totalDistance = (transactionInProgressList, driver) => {
+        const separateeTwoPoint = []
+        for (const transaction of transactionInProgressList) {
+            const senderLocation = {
+                transportCode: transaction.transportCode,
+                location: transaction.shippingInfo.sender,
+                locationStatus: false,
+                transactionPoint: `${transaction.transportCode}-1`,
+            }
+            const receiverLocation = {
+                transportCode: transaction.transportCode,
+                location: transaction.shippingInfo.receiver,
+                locationStatus: true,
+                transactionPoint: `${transaction.transportCode}-2`,
+            }
+            separateeTwoPoint.push(senderLocation, receiverLocation)
+        }
+        const initialLocation = { location: driver.vehicleStatus }
+        const pointsCanToGo = []
+        const pointsCanNotToGo = []
+        separateeTwoPoint.forEach((point) => {
+            if (point.locationStatus) {
+                pointsCanNotToGo.push(point)
+            }
+            if (!point.locationStatus) {
+                pointsCanToGo.push(point)
+            }
+        })
+        return findTheShortestPath([initialLocation], pointsCanToGo, pointsCanNotToGo)
+    }
+
+    const findTheShortestPath = (pointsGone, pointsCanToGo, pointsCannotToGo) => {
+        if (pointsCanToGo.length === 1) {
+            const lat1 = Number(pointsGone[pointsGone.length - 1].location.lat)
+            const long1 = Number(pointsGone[pointsGone.length - 1].location.long)
+            const lat2 = Number(pointsCanToGo[0].location.lat)
+            const long2 = Number(pointsCanToGo[0].location.long)
+            if (!pointsCanToGo[0].locationStatus) {
+                const newPointsGone = [...pointsGone]
+                newPointsGone.push(pointsCanToGo[0])
+                const shortestPathReturn = findTheShortestPath(newPointsGone, pointsCannotToGo, [])
+                const distance =
+                    cacurlatorDistance(lat1, long1, lat2, long2) + shortestPathReturn[1]
+                const path = `${JSON.stringify(pointsCanToGo[0])}` + `${shortestPathReturn[0]}`
+
+                return [`---${distance}---${path}`, distance]
+            }
+            const distance = cacurlatorDistance(lat1, long1, lat2, long2)
+            return [`---${distance}---${JSON.stringify(pointsCanToGo[0])}`, distance]
+        }
+        const distance = {}
+        const path = {}
+        for (let i = 0; i < pointsCanToGo.length; i++) {
+            const newPointsGone = [...pointsGone]
+            newPointsGone.push(pointsCanToGo[i])
+            const newPointsCanToGo = [...pointsCanToGo]
+            let newPointsCannotToGo = [...pointsCannotToGo]
+            if (pointsCanToGo[i].locationStatus === false) {
+                const findMorePointCanGo = pointsCannotToGo.filter(
+                    (point) => point.transportCode === pointsCanToGo[i].transportCode
+                )
+                newPointsCannotToGo = pointsCannotToGo.filter(
+                    (point) => point.transportCode !== pointsCanToGo[i].transportCode
+                )
+                newPointsCanToGo.splice(i, 1, findMorePointCanGo[0])
+            } else {
+                newPointsCanToGo.splice(i, 1)
+            }
+
+            const shortestPathReturn = findTheShortestPath(
+                newPointsGone,
+                newPointsCanToGo,
+                newPointsCannotToGo
+            )
+            const lat1 = Number(pointsGone[pointsGone.length - 1].location.lat)
+            const long1 = Number(pointsGone[pointsGone.length - 1].location.long)
+            const lat2 = Number(pointsCanToGo[i].location.lat)
+            const long2 = Number(pointsCanToGo[i].location.long)
+            distance[i] = cacurlatorDistance(lat1, long1, lat2, long2) + shortestPathReturn[1]
+            path[i] = `${JSON.stringify(pointsCanToGo[i])}` + `${shortestPathReturn[0]}`
+        }
+
+        const myArr = Object.values(distance)
+        const myArrStr = Object.values(path)
+        let myMinNum = myArr[0]
+        let myMinStr = myArrStr[0]
+        for (let i = 0; i < myArr.length; i++) {
+            if (myArr[i] < myMinNum) {
+                myMinNum = myArr[i]
+                myMinStr = myArrStr[i]
+            }
+        }
+
+        return [`---${myMinNum}---${myMinStr}`, myMinNum]
+    }
     return (
         <Box
             sx={{
@@ -241,7 +421,7 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                     height: '100%',
                 }}
             >
-                <Box sx={{ height: '350px' }}>
+                <Box sx={{ height: '350px', position: 'relative' }}>
                     <MapContainer
                         style={{
                             height: '100%',
@@ -254,64 +434,146 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                         zoom={5}
                         scrollWheelZoom={true}
                     >
-                        {driver &&  <Marker
-                            eventHandlers={{
-                                click: () => {
-                                    // setShowTransactionInfo(true);
-                                },
-                            }}
-                            icon={DriverIcon}
-                            position={[driver.vehicleStatus.lat,driver.vehicleStatus.long]}
-                        >
-                            <Tooltip
-                                direction="top"
-                                maxWidth={10}
-                                offset={[0, -45]}
-                                opacity={1}
+                        {driver && (
+                            <Marker
+                                eventHandlers={{
+                                    click: () => {
+                                        // setShowTransactionInfo(true);
+                                    },
+                                }}
+                                icon={DriverIcon}
+                                position={[driver.vehicleStatus.lat, driver.vehicleStatus.long]}
                             >
-                                "Tooltip"
-                            </Tooltip>
-                        </Marker>}
-                        {/* <Marker
-                            eventHandlers={{
-                                click: () => {
-                                    // setShowTransactionInfo(true);
-                                },
-                            }}
-                            icon={InitialIcon}
-                            position={fromAdress}
-                        >
-                            <Tooltip
-                                direction="top"
-                                maxWidth={10}
-                                offset={[0, -45]}
-                                opacity={1}
-                            >
-                                "Tooltip"
-                            </Tooltip>
-                        </Marker>
-                        <Marker
-                            onClick={() => {
-                                // setShowTransactionInfo(true);
-                            }}
-                            icon={DestinationIcon}
-                            position={toAddress}
-                        >
-                            <Tooltip
-                                direction="top"
-                                maxWidth={10}
-                                offset={[0, -45]}
-                                opacity={1}
-                            >
-                                "Tooltip"
-                            </Tooltip>
-                        </Marker>
-                      */}
+                                <Tooltip
+                                    direction="top"
+                                    maxWidth={10}
+                                    offset={[0, -45]}
+                                    opacity={1}
+                                >
+                                    "Tooltip"
+                                </Tooltip>
+                            </Marker>
+                        )}
+                        {timelineData &&
+                            timelineData.map((timeline) => {
+                                if (!timeline.isShow) {
+                                    return null
+                                }
+                                return (
+                                    <Marker
+                                        eventHandlers={{
+                                            click: () => {
+                                                // setShowTransactionInfo(true);
+                                            },
+                                        }}
+                                        icon={timeline.deliveryTime ? DestinationIcon : InitialIcon}
+                                        position={[timeline.location.lat, timeline.location.long]}
+                                    >
+                                        <Tooltip
+                                            direction="top"
+                                            maxWidth={10}
+                                            offset={[0, -45]}
+                                            opacity={1}
+                                        >
+                                            "Tooltip"
+                                        </Tooltip>
+                                    </Marker>
+                                )
+                            })}
                         <TileLayer
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                         />
                     </MapContainer>
+                    <Button
+                        sx={{
+                            position: 'absolute',
+                            right: '15px',
+                            top: '15px',
+                            zIndex: 1,
+                            backgroundColor: 'transparent',
+                            fontSize: '25px',
+                            outline: 'none !important',
+                            border: 'none',
+                        }}
+                        onClick={() => {
+                            setOpen(true)
+                        }}
+                    >
+                        <i class="fa fa-bars" aria-hidden="true"></i>
+                    </Button>
+                    {open && (
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                top: 15,
+                                right: 15,
+                                width: '200px',
+                                height: '250px',
+                                zIndex: 1,
+                                background: 'white',
+                                padding: '22px 18px',
+                                borderRadius: '10px',
+                                overflow: 'auto',
+                                cursor: 'default',
+                            }}
+                        >
+                            <Button
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    setOpen(false)
+                                }}
+                                sx={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    right: 0,
+                                    background: 'none',
+                                    color: 'black',
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                <i class="fa fa-times" aria-hidden="true"></i>
+                            </Button>
+                            {timelineData
+                                ? timelineData.map((timeline) => {
+                                      return (
+                                          <Box
+                                              py={2}
+                                              sx={{
+                                                  color: 'black',
+                                                  borderBottom: '1px solid #8080804d',
+                                                  fontSize: '14px',
+                                                  display: 'flex',
+                                                  justifyContent: 'space-between',
+                                                  cursor: 'pointer',
+                                              }}
+                                              onClick={() => {
+                                                  handleShowHide(timeline.time)
+                                              }}
+                                          >
+                                              <span>
+                                                  {timeline.transportCode}
+                                                  {timeline.deliveryTime ? '(Giao)' : '(Lấy)'}
+                                              </span>
+                                              <span>
+                                                  {timeline.isShow ? (
+                                                      <i
+                                                          class="fa fa-eye-slash"
+                                                          aria-hidden="true"
+                                                      ></i>
+                                                  ) : (
+                                                      <i
+                                                          className="fa fa-eye"
+                                                          aria-hidden="true"
+                                                      ></i>
+                                                  )}
+                                              </span>
+                                          </Box>
+                                      )
+                                  })
+                                : 'Trống'}
+                        </Box>
+                    )}
                 </Box>
                 <Box
                     sx={{
@@ -370,7 +632,7 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                             >
                                 Xe vận chuyển: {vehicle?.name}
                             </Text>
-                            <Box mb={1} sx={{ display: 'flex' }}>
+                            <Box sx={{ display: 'flex' }}>
                                 <Text
                                     as="p"
                                     sx={{
@@ -380,17 +642,7 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                                         marginBottom: '10px',
                                     }}
                                 >
-                                    Tải trọng hiện tại: 999 (kg)
-                                </Text>
-                                <Text
-                                    as="p"
-                                    sx={{
-                                        fontSize: '16px',
-                                        color: '#000000',
-                                        marginBottom: '10px',
-                                    }}
-                                >
-                                    Tối đa: 2020 (kg)
+                                    Tải trọng xe tối đa: {vehicle?.payload} kg
                                 </Text>
                             </Box>
                             <Box mb={1} sx={{ display: 'flex' }}>
@@ -403,17 +655,27 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                                         marginBottom: '3px',
                                     }}
                                 >
-                                    Thể tích thùng chứa hiện tại: 2020 (kg)
+                                    Kích thước thùng chứa (DxRxC): {vehicle?.length} x{' '}
+                                    {vehicle?.width} x {vehicle?.height}{' '}
+                                    m
                                 </Text>
+                            </Box>
+                            <Box mb={1} sx={{ display: 'flex' }}>
                                 <Text
                                     as="p"
                                     sx={{
+                                        minWidth: '320px',
                                         fontSize: '16px',
                                         color: '#000000',
-                                        marginBottom: '10px',
+                                        marginBottom: '3px',
                                     }}
                                 >
-                                    Tối đa: 999 (kg)
+                                    Thể tích thùng chứa tối đa:{' '}
+                                    {`${
+                                        driver?.vehicleStatus?.length *
+                                        driver?.vehicleStatus?.width *
+                                        driver?.vehicleStatus?.height
+                                    } (m3)`}
                                 </Text>
                             </Box>
                             <Box py={2}>
@@ -448,9 +710,15 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                         >
                             Lịch trình xe
                         </Text>
-                        {!timelineData && <Box sx={{
-                            textAlign: 'center'
-                        }} >Chưa có đơn hàng nào!</Box> }
+                        {!timelineData && (
+                            <Box
+                                sx={{
+                                    textAlign: 'center',
+                                }}
+                            >
+                                Lịch trình trống!
+                            </Box>
+                        )}
                         {timelineData &&
                             timelineData.map((timeline, index) => (
                                 <div className="row" key={index}>
@@ -498,56 +766,24 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                                                         >
                                                             Mã vận chuyển: {timeline.transportCode}
                                                         </Box>
-                                                        {timeline.deliveryTime &&
-                                                        timeline.isOver ? (
-                                                            <Box
-                                                                sx={{
-                                                                    color: ' #fff',
-                                                                    fontWeight: 400,
-                                                                    fontSize: '12px',
-                                                                    borderRadius: '5px',
-                                                                    backgroundColor: '#154b7ccc',
-                                                                    fontSize: '12px',
-                                                                    padding: '0px 10px',
-                                                                    lineHeight: '23px',
-                                                                    fontFamily: 'monospace',
-                                                                }}
-                                                            >
-                                                                Đã lấy hàng
-                                                            </Box>
-                                                        ) : timeline.deliveryTime ? (
-                                                            <Box
-                                                                sx={{
-                                                                    color: ' #fff',
-                                                                    fontWeight: 400,
-                                                                    fontSize: '12px',
-                                                                    borderRadius: '5px',
-                                                                    backgroundColor: '#154b7ccc',
-                                                                    fontSize: '12px',
-                                                                    padding: '0px 10px',
-                                                                    lineHeight: '23px',
-                                                                    fontFamily: 'monospace',
-                                                                }}
-                                                            >
-                                                                Đang giao...
-                                                            </Box>
-                                                        ) : (
-                                                            <Box
-                                                                sx={{
-                                                                    color: ' #fff',
-                                                                    fontWeight: 400,
-                                                                    fontSize: '12px',
-                                                                    borderRadius: '5px',
-                                                                    backgroundColor: '#154b7ccc',
-                                                                    fontSize: '12px',
-                                                                    padding: '0px 10px',
-                                                                    lineHeight: '23px',
-                                                                    fontFamily: 'monospace',
-                                                                }}
-                                                            >
-                                                                Đang lấy...
-                                                            </Box>
-                                                        )}
+
+                                                        <Box
+                                                            sx={{
+                                                                color: ' #fff',
+                                                                fontWeight: 400,
+                                                                fontSize: '12px',
+                                                                borderRadius: '5px',
+                                                                backgroundColor: '#154b7ccc',
+                                                                fontSize: '12px',
+                                                                padding: '0px 10px',
+                                                                lineHeight: '23px',
+                                                                fontFamily: 'monospace',
+                                                            }}
+                                                        >
+                                                            {timeline?.deliveryTime
+                                                                ? 'Giao hàng'
+                                                                : 'Lấy hàng'}
+                                                        </Box>
                                                     </Box>
                                                     <Box>
                                                         <Box>
@@ -581,7 +817,7 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                                                                     fontSize: '16px',
                                                                 }}
                                                             >
-                                                                Tải trọng: 999 (kg)
+                                                                Tải trọng: {timeline.payload} (kg)
                                                             </Text>
                                                             <Text
                                                                 as="p"
@@ -589,7 +825,10 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                                                                     fontSize: '16px',
                                                                 }}
                                                             >
-                                                                Còn lại: 2020 (kg)
+                                                                Còn lại:{' '}
+                                                                {driver?.vehicleStatus.payload -
+                                                                    timeline.payload}{' '}
+                                                                (kg)
                                                             </Text>
                                                         </Box>
 
@@ -601,7 +840,11 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                                                                     fontSize: '16px',
                                                                 }}
                                                             >
-                                                                Thể tích: 999 (kg)
+                                                                Thể tích:{' '}
+                                                                {timeline.width *
+                                                                    timeline.height *
+                                                                    timeline.length}{' '}
+                                                                (m3)
                                                             </Text>
                                                             <Text
                                                                 as="p"
@@ -609,7 +852,14 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                                                                     fontSize: '16px',
                                                                 }}
                                                             >
-                                                                Còn lại: 2020 (kg)
+                                                                Còn lại:{' '}
+                                                                {driver?.vehicleStatus.height *
+                                                                    driver?.vehicleStatus.width *
+                                                                    driver?.vehicleStatus.length -
+                                                                    timeline.width *
+                                                                        timeline.height *
+                                                                        timeline.length}{' '}
+                                                                (m3)
                                                             </Text>
                                                         </Box>
                                                         <Box mb={1} sx={{ display: 'flex' }}>
@@ -620,7 +870,9 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                                                                     fontSize: '16px',
                                                                 }}
                                                             >
-                                                                Thùng chứa: 4.2 x 1.5 x 3 (m)
+                                                                Thùng chứa:{' '}
+                                                                {`${timeline.length}x${timeline.width}x${timeline.height}`}{' '}
+                                                                (m)
                                                             </Text>
                                                             <Text
                                                                 as="p"
@@ -628,7 +880,18 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                                                                     fontSize: '16px',
                                                                 }}
                                                             >
-                                                                Còn lại: 2020 (kg)
+                                                                Còn lại:{' '}
+                                                                {`${
+                                                                    driver?.vehicleStatus.length -
+                                                                    timeline.length
+                                                                }x${
+                                                                    driver?.vehicleStatus.width -
+                                                                    timeline.width
+                                                                }x${
+                                                                    driver?.vehicleStatus.height -
+                                                                    timeline.height
+                                                                }`}{' '}
+                                                                (m)
                                                             </Text>
                                                         </Box>
                                                         {timeline.currentVersusBeforeTime.indexOf(
@@ -645,7 +908,9 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                                                                         fontSize: '16px',
                                                                     }}
                                                                 >
-                                                                    -Cách điểm giao dịch gần nhất{' '}
+                                                                    {index === 0
+                                                                        ? '-Cách điểm vị trí xe hiện tại'
+                                                                        : '-Cách điểm giao dịch gần nhất'}{' '}
                                                                     <Box
                                                                         as="span"
                                                                         sx={{
@@ -814,6 +1079,120 @@ const ModalDriverDetail = ({ vehicle, driver, onClose, transaction }) => {
                                 </div>
                             ))}
                     </div>
+
+                    <div className="container mt-2 mb-5">
+                        <Text
+                            as="p"
+                            sx={{
+                                zIndex: 1,
+                                width: 'fit-content',
+                                color: '#1b3a57',
+                                pr: '10px',
+                                fontSize: '20px',
+                                fontWeight: 'bold',
+                                marginBottom: '27px',
+                                borderBottom: '2px solid #d4d9df',
+                                display: 'block',
+                                width: '100%',
+                                paddingBottom: '3px',
+                            }}
+                        >
+                            Lịch trình gợi ý
+                        </Text>
+                        {suggestRoutes &&
+                            suggestRoutes.map((anchor, index) => (
+                                <div className="timelineHeight row " key={index}>
+                                    <div class="col col-3 tlleft2 offset-md-0 ">
+                                        <Box
+                                            sx={{
+                                                fontSize: '21px',
+                                                fontWeight: 600,
+                                                color: '#1b3a57',
+                                                fontFamily: 'revert',
+                                                position: 'absolute',
+                                                right: '-10px',
+                                                top: '65px'
+                                            }}
+                                        >
+                                            <Box>{Math.round(anchor.distance * 10) / 10} Km</Box>
+                                        </Box>
+                                    </div>
+                                    <div class="col col-7 offset-md-0 pl-0">
+                                        <ul className="timeline2">
+                                            <li className="timeline_li">
+                                                <Box
+                                                    sx={{
+                                                        minHeight: '220px',
+                                                        color: '#000000',
+                                                        position: 'relative'
+                                                    }}
+                                                >{index === 0 &&   <Box
+                                                    sx={{
+                                                        position: 'absolute',
+                                                        top: '-10px',
+                                                    }}
+                                                >
+                                                     <Box
+                                                        sx={{
+                                                            color: ' #1b3a57',
+                                                            fontWeight: 600,
+                                                        }}
+                                                    >
+                                                       <img
+                                                                    width="20px"
+                                                                    className="mr-1"
+                                                                    alt="vt"
+                                                                    src="/png/vehicle.png"
+                                                                />  Vị trí hiện của xe
+                                                    </Box>
+                                                   
+                                                    
+                                                </Box>}
+                                                    <Box
+                                                        sx={{
+                                                            position: 'absolute',
+                                                            bottom: '-50px',
+                                                            justifyContent: 'space-between',
+                                                            
+                                                        }}
+                                                    >
+                                                         <Box
+                                                            sx={{
+                                                                color: ' #1b3a57',
+                                                                fontWeight: 600,
+                                                            }}
+                                                        >
+                                                            Mã vận chuyển: {anchor.point.transportCode}
+                                                        </Box>
+                                                        <Box>
+                                                            {anchor.point.locationStatus ? (
+                                                                <img
+                                                                    width="20px"
+                                                                    className="mr-1"
+                                                                    alt="vt"
+                                                                    src="/png/destination.png"
+                                                                />
+                                                            ) : (
+                                                                <img
+                                                                    width="20px"
+                                                                    className="mr-1"
+                                                                    alt="vt"
+                                                                    src="/png/userLocation.png"
+                                                                />
+                                                            )}
+                                                            Vị trí:{' '}
+                                                            {anchor.point.location.address}{' '}{anchor.point.locationStatus ? '(Giao hàng)' : '(Lấy hàng)'}
+                                                        </Box>
+                                                        
+                                                    </Box>
+                                                </Box>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            ))}
+                    </div>
+
                     <Box sx={{ color: '#1b3a57', display: 'flex', marginTop: '50px' }}>
                         <Box sx={{ color: '#1b3a57', fontWeight: 'bold', marginRight: '10px' }}>
                             *Ghi chú:
